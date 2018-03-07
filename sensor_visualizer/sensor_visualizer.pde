@@ -28,8 +28,8 @@ void setup() {
 
 
   // general graphics settings
-  // size(1150, 500); // for visualizing on screen
-  size(1150, 500, PDF, "Non-Interdigitated-Light-Pressure.pdf"); //for exporting to pdf
+   size(1150, 500); // for visualizing on screen
+  // size(1150, 500, PDF, "Non-Interdigitated-Light-Pressure.pdf"); //for exporting to pdf
   // strokeCap(SQUARE); //this matters when you zoom in, not sure whats best
   background(255); //white background 
   translate(50, 50); //center stuff so it looks nice
@@ -57,6 +57,7 @@ void setup() {
           textileSensors[i].drawChange("sensor3", "HIGH");
           textileSensors[i].drawChange("sensor4", "HIGH");
           textileSensors[i].drawChange("sensor5", "HIGH");
+          textileSensors[i].drawDeltaSum("HIGH");
 
           textileSensors[i].drawBaseline("sensor1", "HIGH");
           textileSensors[i].drawBaseline("sensor2", "HIGH");

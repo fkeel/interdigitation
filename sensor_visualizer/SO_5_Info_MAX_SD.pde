@@ -99,8 +99,3 @@ void drawBaseline(String targetClassB, String pressure) {
   }
   popMatrix();
 }
-
-
-
-//closing curly bracket is for object, SO_0,1,2,3 etc
-}
