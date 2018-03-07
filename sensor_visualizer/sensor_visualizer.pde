@@ -28,7 +28,7 @@ void setup() {
 
 
   // general graphics settings
-   size(1150, 500); // for visualizing on screen
+  size(1150, 1000); // for visualizing on screen
   // size(1150, 500, PDF, "Non-Interdigitated-Light-Pressure.pdf"); //for exporting to pdf
   // strokeCap(SQUARE); //this matters when you zoom in, not sure whats best
   background(255); //white background 
@@ -43,13 +43,14 @@ void setup() {
 
   //draw some graphs
   for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-    if (textileSensors[i].spikeWidthIs(35)) {             //filter according to spikeWidth
-      if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
-        if (textileSensors[i].pointSizeIs(3.75)) {        //filter according to point szie
+    if (textileSensors[i].spikeWidthIs(100)) {             //filter according to spikeWidth
+      if (textileSensors[i].spikeRatioIs(0)) {          //filter according to ratio
+        if (textileSensors[i].pointSizeIs(1.25)) {        //filter according to point szie
 
           //   textileSensors[i].drawChange("sensor1", "HIGH");
           //   textileSensors[i].drawChange("sensor2", "HIGH");
-          textileSensors[i].drawData("sensor3", "HIGH");
+          //   textileSensors[i].drawData("sensor3", "HIGH");
+          //   textileSensors[i].drawMean("sensor3", "HIGH");
           //     textileSensors[i].drawConfidence("sensor3", "LOW");
 
           textileSensors[i].drawChange("sensor1", "HIGH");
@@ -57,11 +58,11 @@ void setup() {
           textileSensors[i].drawChange("sensor3", "HIGH");
           textileSensors[i].drawChange("sensor4", "HIGH");
           textileSensors[i].drawChange("sensor5", "HIGH");
-          textileSensors[i].drawDeltaSum("HIGH");
+          //   textileSensors[i].drawDeltaSum("HIGH");
 
           textileSensors[i].drawBaseline("sensor1", "HIGH");
-          textileSensors[i].drawBaseline("sensor2", "HIGH");
           textileSensors[i].drawBaseline("sensor3", "HIGH");
+          textileSensors[i].drawDeltaSum( "HIGH");
           textileSensors[i].drawBaseline("sensor4", "HIGH");
           textileSensors[i].drawBaseline("sensor5", "HIGH");
 

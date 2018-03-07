@@ -15,11 +15,11 @@ class Sensor {
 
 
   Sensor(String filename) { //constructor
-  
+
     ////////////////////////////////////
     //parse filename for relevant data//
     ////////////////////////////////////
-    
+
     //example filename "SW100-RATIO0-P125.csv" 
 
     String[] proporties = splitTokens(filename, "- .");
@@ -38,8 +38,8 @@ class Sensor {
     pointSize = int(proporties[2])/100f;
 
     println("spikeWidth: " +spikeWidth + ", spikeRation: " + spikeRatio + ", pointSize: " + pointSize); //for debug
-    
-    
+
+
 
     ////////////////////////////////
     //Parse csv to populate arrays//
@@ -111,4 +111,4 @@ class Sensor {
     }
   }
 
-// object doesn't end here, so no curley brackets. other methods all have their own tab, to find them faster
+  // object doesn't end here, so no curley brackets. other methods all have their own tab, to find them faster

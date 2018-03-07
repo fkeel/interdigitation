@@ -87,7 +87,7 @@ void drawBaseline(String targetClassB, String pressure) {
 
   for (int i = 0; i < SDs.length-1; i++) { //loop through all records
 
-    stroke(0, 100, 20, 240);
+    stroke(255, 0, 20, 140);
     line(i*15, -(SDs[i])*1.645, (i+1)*15, -(SDs[i+1])*1.645); //drawMax of 95%CI (one sided!)
     fill(200, 200, 0, 80);
     noStroke();
