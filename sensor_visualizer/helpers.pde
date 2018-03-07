@@ -1,4 +1,6 @@
 
+//currently not used
+
 float getVerticalPositionCap(float[] haystack) {
   float sum = 0;
   float average;

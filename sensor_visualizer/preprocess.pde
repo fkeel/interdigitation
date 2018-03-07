@@ -1,5 +1,6 @@
 
-//these are double at the moment, one set deals with float arrays the other with int
+// some helper functions for doing basic stats
+// some of these are double at the moment, one set deals with float arrays the other with int
 
 float mean(int[][] data) {
   int counter = 0;
