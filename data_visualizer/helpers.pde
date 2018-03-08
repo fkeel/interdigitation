@@ -7,3 +7,32 @@ float[] simpleSmooth(float[] data) {
 
   return data;
 }
+
+float mean(float[] data) {
+  int counter = 0;
+  float total = 0;
+  for (int i = 0; i < data.length; i++) {
+    total = total+ data[i];
+    counter++;
+  }
+  float mean = total / counter;
+  return mean;
+}
+
+
+float standardDeviation(float[] data) {
+  int counter = 0;
+  float total = 0;  
+  float variance = 0;
+  float sd;
+  float average = mean(data);
+
+  for (int i = 0; i < data.length; i++) {
+    total = total + sq(data[i]-average);
+    counter++;
+  }
+
+  variance = total / counter;
+  sd = sqrt(variance);
+  return sd;
+}

@@ -14,7 +14,7 @@ class Sensor {
   int stripNumber;
 
   //data
-  int[][][][] data;               //data - [pressure(2)][x(71)][y(11)][strip(7)]
+  float[][][][] data;               //data - [pressure(2)][strip(7)][x(71)][y(11)]
   //  For example, the third strip at the coordinate (20/5) for high pressure will be at data[1][20][5][2]
 
 
@@ -78,60 +78,129 @@ class Sensor {
       //do this at all x positions
       for (int y = 0; y <yPositions; y++) {
         //do this at all y positions
-        line(i*15, data[pressure][i][y][strip]*0.4, (i+1)*15, data[pressure][i+1][y][strip]*0.4);
+        line(i*15, data[pressure][strip][i][y]*0.4, (i+1)*15, data[pressure][strip][i+1][y]*0.4);
       }
       //do this at all x positions
     }
   }
 
+  void tester() {
+    println(data[1][3][3]);
+  }
+
   void drawStripAverage(int pressure, int strip) {
 
     //get the average
-    float[] averages = getStripAverages(pressure, strip);
 
+    float average;
+    float nextAverage;
     for (int i = 0; i <xPositions-1; i++) {
       //do this at all x positions
-      line(i*15, averages[i]*0.4, (i+1)*15, averages[i+1]*0.4);
+      average = mean(data[pressure][strip][i]);
+      nextAverage = mean(data[pressure][strip][i+1]);
+      line(i*15, average*0.4, (i+1)*15, nextAverage*0.4);
     }
   }
+
 
   void drawStripConfidence(int pressure, int strip, float interval) {
 
     //get the average
-    float[] averages = getStripAverages(pressure, strip);
-    float[] deviations = getStandardDeviations(pressure, strip);
-    // deviations = simpleSmooth(deviations);
+    float average;
+    float deviation;
+    float nextAverage;
+    float nextDeviation;
 
-    for (int i = 0; i <xPositions; i++) {
-      //do this at all x positions
-    //  line(i*15, averages[i]*0.4+(deviations[i]*interval), (i+1)*15, averages[i+1]*0.4+(deviations[i+1]*interval));
-     // line(i*15, averages[i]*0.4-(deviations[i]*interval), (i+1)*15, averages[i+1]*0.4-(deviations[i+1]*interval));
+
+    for (int i = 0; i <xPositions-1; i++) {
+
+      average = mean(data[pressure][strip][i]);
+      nextAverage = mean(data[pressure][strip][i+1]);
+      deviation = standardDeviation(data[pressure][strip][i]);
+      nextDeviation = standardDeviation(data[pressure][strip][i+1]);
+
+      noStroke();
+
+      quad(i*15, average*0.4+(deviation*interval)*0.4, 
+        (i+1)*15, nextAverage*0.4+(nextDeviation*interval)*0.4, 
+        (i+1)*15, nextAverage*0.4-(nextDeviation*interval)*0.4, 
+        i*15, average*0.4-(deviation*interval)*0.4);
       /*
-      noStroke();
-      quad(i*15, averages[i]*0.4+(deviations[i]*interval), 
-          (i+1)*15, averages[i+1]*0.4+(deviations[i+1]*interval), 
-          (i+1)*15, averages[i+1]*0.4-(deviations[i+1]*interval), 
-          i*15, averages[i]*0.4-(deviations[i]*interval));
-          */
-         
-      noStroke();
-      quad(i*15-8, averages[i]*0.4+(deviations[i]*interval), 
-          i*15+7, averages[i]*0.4+(deviations[i]*interval), 
-          i*15+7, averages[i]*0.4-(deviations[i]*interval), 
-          i*15-8, averages[i]*0.4-(deviations[i]*interval));
-          
-         
-          line(i*15-3, averages[i]*0.4+(deviations[i]*interval), i*15+3, averages[i]*0.4+(deviations[i]*interval));
-          line(i*15-3, averages[i]*0.4-(deviations[i]*interval), i*15+3, averages[i]*0.4-(deviations[i]*interval));
-          line(i*15, averages[i]*0.4+(deviations[i]*interval), i*15, averages[i]*0.4-(deviations[i]*interval));
+      quad(i*15-7, average*0.4+(deviation*interval)*0.4, 
+       i*15+7, average*0.4+(deviation*interval*0.4), 
+       i*15+7, average*0.4-(deviation*interval*0.4), 
+       i*15-7, average*0.4-(deviation*interval)*0.4);
+       */
     }
+  }
+
+  void drawStripDelta(int pressure, int strip) {
+    pushMatrix();
+    translate(0, 400);
+
+    float average;
+    float nextAverage;
+    float delta;
+    float nextDelta;
+    float sd;
+    float nextSd;
+
+
+    for (int i = 0; i <xPositions-2; i++) {
+      stroke(0, 125, 0);
+      strokeWeight(2);
+      average = mean(data[pressure][strip][i]);
+      nextAverage = mean(data[pressure][strip][i+1]);
+      delta = -abs(average-nextAverage);
+      average = mean(data[pressure][strip][i+1]);
+      nextAverage = mean(data[pressure][strip][i+2]);
+      nextDelta = -abs(average-nextAverage);
+      // line(i*15, delta, (i+1)*15, nextDelta);
+      stroke(255, 125, 0);
+      sd = -standardDeviation(data[pressure][strip][i]);
+      nextSd = -standardDeviation(data[pressure][strip][i+1]);
+      //  line(i*15, sd, (i+1)*15, nextSd);
+      noStroke();
+      if (abs(delta)>abs(sd*1.645)) {
+        //   if (abs(delta)>abs(sd*1.96)) {
+        quad(i*15, 0, i*15, -1000*0.4, (i)*15+8, -1000*0.4, (i)*15+8, 0);
+        println(delta);
+      }
+    }
+
+    for (int i = xPositions-1; i > 1; i--) {
+      stroke(0, 125, 0);
+      strokeWeight(2);
+      average = mean(data[pressure][strip][i]);
+      nextAverage = mean(data[pressure][strip][i-1]);
+      delta = -abs(average-nextAverage);
+      average = mean(data[pressure][strip][i-1]);
+      nextAverage = mean(data[pressure][strip][i-2]);
+      nextDelta = -abs(average-nextAverage);
+      // line(i*15, delta, (i+1)*15, nextDelta);
+      stroke(255, 125, 0);
+      sd = -standardDeviation(data[pressure][strip][i]);
+      nextSd = -standardDeviation(data[pressure][strip][i-1]);
+      //  line(i*15, sd, (i+1)*15, nextSd);
+      noStroke();
+      if (abs(delta)>abs(sd*1.645)) {
+        //   if (abs(delta)>abs(sd*1.96)) {
+        quad(i*15, 0, i*15, -1000*0.4, (i)*15-7, -1000*0.4, (i)*15-7, 0);
+        println(delta);
+      }
+    }
+
+
+
+
+    popMatrix();
   }
 
 
   //////////////////////////////////
   ///////Calculation methods////////
   //////////////////////////////////
-
+  //maybe these should not be used
   //mean
   float[] getStripAverages(int pressure, int strip) {
     float[] averages = new float [xPositions];
@@ -139,7 +208,7 @@ class Sensor {
       //do this at all x positions
       for (int y = 0; y <yPositions; y++) {
         //do this at all y positions
-        averages[i] = averages[i] + data[pressure][i][y][strip];
+        //   averages[i] = averages[i] + data[pressure][i][y][strip];
       }
       averages[i] = averages[i]/yPositions;
       //do this at all x positions
@@ -158,7 +227,7 @@ class Sensor {
       //do this at all x positions
       for (int y = 0; y <yPositions; y++) {
         //do this at all y positions
-        totals[i] = totals[i] + sq(data[pressure][i][y][strip]-averages[i]);
+        //     totals[i] = totals[i] + sq(data[pressure][i][y][strip]-averages[i]);
       }
     }
 

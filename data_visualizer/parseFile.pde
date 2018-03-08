@@ -1,11 +1,11 @@
 //for parsing files
 
-int[][][][] parseFile(String filename) {
+float[][][][] parseFile(String filename) {
   String[] lines = loadStrings(filename);
 
-  //create file that is [pressure(2)][x(71)][y(11)][strip(7)]
+  //create file that is [pressure(2)][strip(7)][x(71)][y(11)]
 
-  int[][][][] data = new int[2][71][11][7]; 
+  float[][][][] data = new float[2][7][71][11]; 
 
   //  println("created the monster array");
 
@@ -16,7 +16,7 @@ int[][][][] parseFile(String filename) {
     //    println("... done");
     for (int y = 0; y < 7; y++) {
       //      println("writing to array index (" + items[2] + " / " + items[0] + " / " + abs(int(float(items[1])/2.5))+") Value: " + items[y+3]); 
-      data[int(items[2])][int(items[0])][abs(int(float(items[1])/2.5))][y] = int(items[y+3]);
+      data[int(items[2])][y][int(items[0])][abs(int(float(items[1])/2.5))] = int(items[y+3]);
     }
   }
   return data;
