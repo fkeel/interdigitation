@@ -232,6 +232,9 @@ void setup() {
               strokeWeight(2);
               stroke(52*x, 180, 255-(52*x));
               textileSensors[i].drawStripAverage(1, x, ratio);
+             fill(52*x, 180, 255-(52*x), 80);
+              stroke(52*x, 180, 255-(52*x));
+              textileSensors[i].drawStripDelta(1, x, ratio);
             }
           }
         }

@@ -42,9 +42,9 @@ void setup() {
 
       //do this for each line
       appendTextToFile("new/"+fileNames[fileID], dataToWrite + "\r\n");
-      print(".");
+     // print(".");
     }
-    println("File Complete");
+   // println("File Complete");    //print statements make this a *lot* slower than it needs to be
     //do this for each file
   }
 }
