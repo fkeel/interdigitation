@@ -72,14 +72,22 @@ class Sensor {
   //////////////////////////////////
 
 
-  void drawStripData(int pressure, int strip) {
+  void drawStripData(int pressure, int strip, float scale) {
 
     for (int i = 0; i <xPositions-1; i++) {
       //do this at all x positions
       for (int y = 0; y <yPositions; y++) {
         //do this at all y positions
-        line(i*15, data[pressure][strip][i][y]*0.4, (i+1)*15, data[pressure][strip][i+1][y]*0.4);
+        line(i*15, data[pressure][strip][i][y]*scale, (i+1)*15, data[pressure][strip][i+1][y]*scale);
+        fill(255);
+        ellipse(i*15, data[pressure][strip][i][y]*scale, 3, 3);
+        if (i == xPositions-2) {
+          ellipse(70*15, data[pressure][strip][70][y]*scale, 3, 3); //last dot
+        }
       }
+
+
+
       //do this at all x positions
     }
   }
@@ -88,7 +96,7 @@ class Sensor {
     println(data[1][3][3]);
   }
 
-  void drawStripAverage(int pressure, int strip) {
+  void drawStripAverage(int pressure, int strip, float scale) {
 
     //get the average
 
@@ -98,12 +106,13 @@ class Sensor {
       //do this at all x positions
       average = mean(data[pressure][strip][i]);
       nextAverage = mean(data[pressure][strip][i+1]);
-      line(i*15, average*0.4, (i+1)*15, nextAverage*0.4);
+      line(i*15, average*scale, (i+1)*15, nextAverage*scale);
     }
   }
 
 
-  void drawStripConfidence(int pressure, int strip, float interval) {
+  void drawStripConfidence(int pressure, int strip, float interval, String type, float scale) {
+    //this could take another parameter, specifying the viz method
 
     //get the average
     float average;
@@ -112,31 +121,65 @@ class Sensor {
     float nextDeviation;
 
 
-    for (int i = 0; i <xPositions-1; i++) {
+    for (int i = 0; i <xPositions; i++) {
 
       average = mean(data[pressure][strip][i]);
-      nextAverage = mean(data[pressure][strip][i+1]);
       deviation = standardDeviation(data[pressure][strip][i]);
-      nextDeviation = standardDeviation(data[pressure][strip][i+1]);
+
 
       noStroke();
-
-      quad(i*15, average*0.4+(deviation*interval)*0.4, 
-        (i+1)*15, nextAverage*0.4+(nextDeviation*interval)*0.4, 
-        (i+1)*15, nextAverage*0.4-(nextDeviation*interval)*0.4, 
-        i*15, average*0.4-(deviation*interval)*0.4);
-      /*
-      quad(i*15-7, average*0.4+(deviation*interval)*0.4, 
-       i*15+7, average*0.4+(deviation*interval*0.4), 
-       i*15+7, average*0.4-(deviation*interval*0.4), 
-       i*15-7, average*0.4-(deviation*interval)*0.4);
-       */
+      if (type.equals("CURVE")) {
+        if (i < xPositions -1) {
+          nextAverage = mean(data[pressure][strip][i+1]);
+          nextDeviation = standardDeviation(data[pressure][strip][i+1]);
+          quad(i*15, average*scale+(deviation*interval)*scale, 
+            (i+1)*15, nextAverage*scale+(nextDeviation*interval)*scale, 
+            (i+1)*15, nextAverage*scale-(nextDeviation*interval)*scale, 
+            i*15, average*scale-(deviation*interval)*scale);
+        }
+      } else if (type.equals("BLOCKS")) {
+        quad(i*15-7, average*scale+(deviation*interval)*scale, 
+          i*15+7, average*scale+(deviation*interval*scale), 
+          i*15+7, average*scale-(deviation*interval*scale), 
+          i*15-7, average*scale-(deviation*interval)*scale);
+      } else {
+        println("Error, unknown VIZ type for CI");
+      }
     }
   }
 
-  void drawStripDelta(int pressure, int strip) {
+  void drawStripDelta(int pressure, int strip, float scale) {
     pushMatrix();
-    translate(0, 400);
+    translate(15, 1000*scale);
+
+    float average;
+    float nextAverage;
+    float delta;
+    float nextDelta;
+    float sd;
+    float nextSd;
+
+
+    for (int i = 0; i <xPositions-2; i++) {
+
+      average = mean(data[pressure][strip][i]);
+      nextAverage = mean(data[pressure][strip][i+1]);
+      delta = -abs(average-nextAverage);
+      average = mean(data[pressure][strip][i+1]);
+      nextAverage = mean(data[pressure][strip][i+2]);
+      nextDelta = -abs(average-nextAverage);
+      line(i*15, delta, (i+1)*15, nextDelta);
+
+      sd = -standardDeviation(data[pressure][strip][i]);
+      nextSd = -standardDeviation(data[pressure][strip][i+1]);
+      //  line(i*15, sd*2, (i+1)*15, nextSd*2);
+    }
+    popMatrix();
+  }
+
+  void drawStripQuality(int pressure, int strip, float scale) {
+    pushMatrix();
+    translate(0, 1000*scale);
 
     float average;
     float nextAverage;
@@ -163,7 +206,7 @@ class Sensor {
       noStroke();
       if (abs(delta)>abs(sd*1.645)) {
         //   if (abs(delta)>abs(sd*1.96)) {
-        quad(i*15, 0, i*15, -1000*0.4, (i)*15+8, -1000*0.4, (i)*15+8, 0);
+        quad(i*15, 0, i*15, -1000*scale, (i)*15+8, -1000*scale, (i)*15+8, 0);
         println(delta);
       }
     }
@@ -185,7 +228,7 @@ class Sensor {
       noStroke();
       if (abs(delta)>abs(sd*1.645)) {
         //   if (abs(delta)>abs(sd*1.96)) {
-        quad(i*15, 0, i*15, -1000*0.4, (i)*15-7, -1000*0.4, (i)*15-7, 0);
+        quad(i*15, 0, i*15, -1000*scale, (i)*15-7, -1000*scale, (i)*15-7, 0);
         println(delta);
       }
     }
@@ -196,11 +239,39 @@ class Sensor {
     popMatrix();
   }
 
-
   //////////////////////////////////
   ///////Calculation methods////////
   //////////////////////////////////
+
+
+
+
+
+
+
+
+
   //maybe these should not be used
+
+
+
+
+
+
+
+
+
+  //don't use, remove these eventually
+
+
+
+
+
+
+
+
+
+
   //mean
   float[] getStripAverages(int pressure, int strip) {
     float[] averages = new float [xPositions];

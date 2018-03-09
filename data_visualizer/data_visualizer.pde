@@ -28,46 +28,82 @@ void setup() {
 
 
   // general graphics settings
- // size(1150, 1000); // for visualizing on screen
-   size(1150, 500, PDF, "test_best_interdigitation_small.pdf"); //for exporting to pdf
-  // strokeCap(SQUARE); //this matters when you zoom in, not sure whats best
+   size(1150, 1000); // for visualizing on screen
+  //  size(1150, 1000, PDF, "DeltasComparison_NoInterdig.pdf"); //for exporting to pdf
+  //   strokeCap(SQUARE); //this matters when you zoom in, not sure whats best
   background(255); //white background 
   translate(50, 50); //center stuff so it looks nice
 
 
   //legend
   fill(120);
-  text("'best' sensor, Smallest touch", 750, -4); //name of graph
-  drawLegend(); //draw the legend (only correct units for measures, needs to be fixed to work with deltas
+  text("Non-Interdigitized Sensor, Strips #1 - 5, High Pressure, Touch Size: 125%", 650, -4); //name of graph
+  drawLegend(0.25); //draw the legend (only correct units for measures, needs to be fixed to work with deltas
+  pushMatrix();
+  // translate(-50, 0);
+  //draw some graphs
+  for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
+    if (textileSensors[i].spikeWidthIs(100)) {             //filter according to spikeWidth
+      if (textileSensors[i].spikeRatioIs(0)) {          //filter according to ratio
+        if (textileSensors[i].pointSizeIs(1.25)) {        //filter according to point szie
 
+          for (int j = 0; j < 7; j++) {
+            //  textileSensors[i].drawStripDelta(1, j);
+          }
+          for (int x = 0; x < 5; x++) {
+            stroke(62*x, 180, 255-(62*x));
+            strokeWeight(3);
+
+            textileSensors[i].drawStripDelta(1, x, 0.25);
+          }
+        }
+      }
+    }
+  }
+  popMatrix();
+  translate(0, 300);
+  fill(120);
+  text("Non-Interdigitized Sensor, Strips #1 - 5, High Pressure, Touch Size: 250%", 650, -4); //name of graph
+  drawLegend(0.25); //draw the legend (only correct units for measures, needs to be fixed to work with deltas
+
+  pushMatrix();
+  // translate(20, 0);
+  //draw some graphs
+  for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
+    if (textileSensors[i].spikeWidthIs(100)) {             //filter according to spikeWidth
+      if (textileSensors[i].spikeRatioIs(0)) {          //filter according to ratio
+        if (textileSensors[i].pointSizeIs(2.5)) {        //filter according to point szie
+          for (int j = 0; j < 7; j++) {
+            //  textileSensors[i].drawStripDelta(1, j);
+          }
+          for (int x = 0; x < 5; x++) {
+            stroke(62*x, 180, 255-(62*x));
+            strokeWeight(3);
+            textileSensors[i].drawStripDelta(1, x, 0.25);
+          }
+        }
+      }
+    }
+  }
+  popMatrix();
+
+  translate(0, 300);
+  fill(120);
+  text("Non-Interdigitized Sensor, Strips #1 - 5, High Pressure, Touch Size: 375%", 650, -4); //name of graph
+  drawLegend(0.25); //draw the legend (only correct units for measures, needs to be fixed to work with deltas
 
   //draw some graphs
   for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-    if (textileSensors[i].spikeWidthIs(35)) {             //filter according to spikeWidth
-      if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
-        if (textileSensors[i].pointSizeIs(1.25)) {        //filter according to point szie
-
-          fill(255, 200, 0, 60);
-
-          // textileSensors[i].drawStripConfidence(1, 4, 1.98);
-          stroke(120, 120);
-          //   textileSensors[i].drawStripData(1, 4);
-          stroke(255, 0, 0);
-          //   textileSensors[i].drawStripAverage(1, 4);
-          //textileSensors[i].drawStripDelta(1, 4);
-
-
+    if (textileSensors[i].spikeWidthIs(100)) {             //filter according to spikeWidth
+      if (textileSensors[i].spikeRatioIs(0)) {          //filter according to ratio
+        if (textileSensors[i].pointSizeIs(3.75)) {        //filter according to point szie
           for (int j = 0; j < 7; j++) {
-            textileSensors[i].drawStripDelta(1, j);
+            //  textileSensors[i].drawStripDelta(1, j);
           }
-
-          for (int x = 0; x < 7; x++) {
-
-            fill(255, 0, 0, 30);
-            textileSensors[i].drawStripConfidence(1, x, 1.98);
-            stroke(120, 120);
-            strokeWeight(1);
-            textileSensors[i].drawStripData(01, x);
+          for (int x = 0; x < 5; x++) {
+           stroke(62*x, 180, 255-(62*x));
+            strokeWeight(3);
+            textileSensors[i].drawStripDelta(1, x, 0.25);
           }
         }
       }
