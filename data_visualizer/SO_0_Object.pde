@@ -78,7 +78,7 @@ class Sensor {
       //do this at all x positions
       for (int y = 0; y <yPositions; y++) {
         //do this at all y positions
-        line(i*15, data[pressure][strip][i][y]*scale, (i+1)*15, data[pressure][strip][i+1][y]*scale);
+      //  line(i*15, data[pressure][strip][i][y]*scale, (i+1)*15, data[pressure][strip][i+1][y]*scale);
         fill(255);
         ellipse(i*15, data[pressure][strip][i][y]*scale, 3, 3);
         if (i == xPositions-2) {
@@ -158,7 +158,16 @@ class Sensor {
     float nextDelta;
     float sd;
     float nextSd;
+    float max = 0;
 
+    for (int i = 0; i <xPositions-2; i++) {
+      average = mean(data[pressure][strip][i]);
+      nextAverage = mean(data[pressure][strip][i+1]);
+      delta = abs(average-nextAverage);
+      if (delta > max) {
+        max = delta;
+      }
+    }
 
     for (int i = 0; i <xPositions-2; i++) {
 
@@ -168,11 +177,27 @@ class Sensor {
       average = mean(data[pressure][strip][i+1]);
       nextAverage = mean(data[pressure][strip][i+2]);
       nextDelta = -abs(average-nextAverage);
-      line(i*15, delta, (i+1)*15, nextDelta);
 
-      sd = -standardDeviation(data[pressure][strip][i]);
-      nextSd = -standardDeviation(data[pressure][strip][i+1]);
+      line(i*15, (delta/max)*1000*scale, (i+1)*15, (nextDelta/max)*1000*scale);
+
+
+      //    sd = -standardDeviation(data[pressure][strip][i]);
+      //  nextSd = -standardDeviation(data[pressure][strip][i+1]);
       //  line(i*15, sd*2, (i+1)*15, nextSd*2);
+    }
+
+    for (int i = 0; i <xPositions-2; i++) {
+
+      average = mean(data[pressure][strip][i]);
+      nextAverage = mean(data[pressure][strip][i+1]);
+      delta = -abs(average-nextAverage);
+      average = mean(data[pressure][strip][i+1]);
+      nextAverage = mean(data[pressure][strip][i+2]);
+      nextDelta = -abs(average-nextAverage);
+
+      line(i*15, (delta/max)*1000*scale, (i+1)*15, (nextDelta/max)*1000*scale);
+      noStroke();
+      quad(i*15, (delta/max)*1000*scale, (i+1)*15, (nextDelta/max)*1000*scale, (i+1)*15, 0, i*15, 0);
     }
     popMatrix();
   }
