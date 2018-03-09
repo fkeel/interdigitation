@@ -72,34 +72,28 @@ class Sensor {
   //////////////////////////////////
 
 
-  void drawStripData(int pressure, int strip, float scale) {
+  void drawStripData(int pressure, int strip, float scale) { // <-- ToDo: Add a Type Parameter
 
     for (int i = 0; i <xPositions-1; i++) {
       //do this at all x positions
       for (int y = 0; y <yPositions; y++) {
         //do this at all y positions
-      //  line(i*15, data[pressure][strip][i][y]*scale, (i+1)*15, data[pressure][strip][i+1][y]*scale);
+        line(i*15, data[pressure][strip][i][y]*scale, (i+1)*15, data[pressure][strip][i+1][y]*scale); //<-- needs to be uncommented for showing only the dots. 
         fill(255);
         ellipse(i*15, data[pressure][strip][i][y]*scale, 3, 3);
         if (i == xPositions-2) {
           ellipse(70*15, data[pressure][strip][70][y]*scale, 3, 3); //last dot
         }
       }
-
-
-
       //do this at all x positions
     }
   }
 
-  void tester() {
+  void tester() { //this does nothing of importance
     println(data[1][3][3]);
   }
 
   void drawStripAverage(int pressure, int strip, float scale) {
-
-    //get the average
-
     float average;
     float nextAverage;
     for (int i = 0; i <xPositions-1; i++) {
@@ -112,9 +106,8 @@ class Sensor {
 
 
   void drawStripConfidence(int pressure, int strip, float interval, String type, float scale) {
-    //this could take another parameter, specifying the viz method
 
-    //get the average
+    //get the average & SD
     float average;
     float deviation;
     float nextAverage;
@@ -126,9 +119,8 @@ class Sensor {
       average = mean(data[pressure][strip][i]);
       deviation = standardDeviation(data[pressure][strip][i]);
 
-
       noStroke();
-      if (type.equals("CURVE")) {
+      if (type.equals("CURVE")) { //visualize as continuous area
         if (i < xPositions -1) {
           nextAverage = mean(data[pressure][strip][i+1]);
           nextDeviation = standardDeviation(data[pressure][strip][i+1]);
@@ -137,7 +129,7 @@ class Sensor {
             (i+1)*15, nextAverage*scale-(nextDeviation*interval)*scale, 
             i*15, average*scale-(deviation*interval)*scale);
         }
-      } else if (type.equals("BLOCKS")) {
+      } else if (type.equals("BLOCKS")) { //display as discrete blocks
         quad(i*15-7, average*scale+(deviation*interval)*scale, 
           i*15+7, average*scale+(deviation*interval*scale), 
           i*15+7, average*scale-(deviation*interval*scale), 
@@ -148,7 +140,7 @@ class Sensor {
     }
   }
 
-  void drawStripDelta(int pressure, int strip, float scale) {
+  void drawStripDelta(int pressure, int strip, float scale) { // 
     pushMatrix();
     translate(15, 1000*scale);
 
@@ -160,7 +152,8 @@ class Sensor {
     float nextSd;
     float max = 0;
 
-    for (int i = 0; i <xPositions-2; i++) {
+
+    for (int i = 0; i <xPositions-2; i++) { //find maximum for normalization
       average = mean(data[pressure][strip][i]);
       nextAverage = mean(data[pressure][strip][i+1]);
       delta = abs(average-nextAverage);
@@ -169,7 +162,7 @@ class Sensor {
       }
     }
 
-    for (int i = 0; i <xPositions-2; i++) {
+    for (int i = 0; i <xPositions-2; i++) { //draw maximum
 
       average = mean(data[pressure][strip][i]);
       nextAverage = mean(data[pressure][strip][i+1]);
@@ -180,13 +173,12 @@ class Sensor {
 
       line(i*15, (delta/max)*1000*scale, (i+1)*15, (nextDelta/max)*1000*scale);
 
-
-      //    sd = -standardDeviation(data[pressure][strip][i]);
+      //  sd = -standardDeviation(data[pressure][strip][i]);       //display relative to SD? probably not...
       //  nextSd = -standardDeviation(data[pressure][strip][i+1]);
       //  line(i*15, sd*2, (i+1)*15, nextSd*2);
     }
 
-    for (int i = 0; i <xPositions-2; i++) {
+    for (int i = 0; i <xPositions-2; i++) { //draw area (this should work in a single loop, but I want the color formatting to be outside, so maybe not...
 
       average = mean(data[pressure][strip][i]);
       nextAverage = mean(data[pressure][strip][i+1]);
@@ -195,14 +187,17 @@ class Sensor {
       nextAverage = mean(data[pressure][strip][i+2]);
       nextDelta = -abs(average-nextAverage);
 
-      line(i*15, (delta/max)*1000*scale, (i+1)*15, (nextDelta/max)*1000*scale);
       noStroke();
+      
       quad(i*15, (delta/max)*1000*scale, (i+1)*15, (nextDelta/max)*1000*scale, (i+1)*15, 0, i*15, 0);
     }
     popMatrix();
   }
 
-  void drawStripQuality(int pressure, int strip, float scale) {
+
+/*********************THIS NEEDS THINKING***********************/
+
+  void drawStripQuality(int pressure, int strip, float scale) { 
     pushMatrix();
     translate(0, 1000*scale);
 
