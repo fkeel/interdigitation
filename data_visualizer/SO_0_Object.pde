@@ -89,6 +89,20 @@ class Sensor {
     }
   }
 
+  void drawStripAtY(int pressure, int y, int strip, float scale) { // <-- ToDo: Add a Type Parameter
+
+    for (int i = 0; i <xPositions-1; i++) {
+
+      line(i*15, data[pressure][strip][i][y]*scale, (i+1)*15, data[pressure][strip][i+1][y]*scale); //<-- needs to be uncommented for showing only the dots. 
+      fill(255);
+      ellipse(i*15, data[pressure][strip][i][y]*scale, 3, 3);
+      if (i == xPositions-2) {
+        ellipse(70*15, data[pressure][strip][70][y]*scale, 3, 3); //last dot
+      }
+      //do this at all x positions
+    }
+  }
+
   void tester() { //this does nothing of importance
     println(data[1][3][3]);
   }
@@ -188,14 +202,14 @@ class Sensor {
       nextDelta = -abs(average-nextAverage);
 
       noStroke();
-      
+
       quad(i*15, (delta/max)*1000*scale, (i+1)*15, (nextDelta/max)*1000*scale, (i+1)*15, 0, i*15, 0);
     }
     popMatrix();
   }
 
 
-/*********************THIS NEEDS THINKING***********************/
+  /*********************THIS NEEDS THINKING***********************/
 
   void drawStripQuality(int pressure, int strip, float scale) { 
     pushMatrix();

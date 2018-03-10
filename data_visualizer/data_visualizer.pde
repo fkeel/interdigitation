@@ -40,6 +40,14 @@ void setup() {
    stripIndex   --> 0 - 7
    yScale       --> 1 == 1 pixel per sampled bit, 0.5 == 1 pixel per 2 sampled bits etc.
    
+   --> plot all x for specific y (e.g. to show memory effects) 
+   sensor.drawStripAtY(int pressure, int yPosition, int stripIndex, float yScale);
+   
+   pressure     --> 0 for Low, 1 for High
+   yPosition    --> 0 to 11, units of 2 mm (or was it 2.5? ASK VICTOR!)
+   stripIndex   --> 0 - 7
+   yScale       --> 1 == 1 pixel per sampled bit, 0.5 == 1 pixel per 2 sampled bits etc.
+   
    --> plot average
    drawStripAverage(int pressure, int strip, float scale) 
    
@@ -80,11 +88,11 @@ void setup() {
   /********* global graphics settings ************/
 
   size(1150, 1050); // for visualizing on screen
-  // size(1150, 1050, PDF, "EffectOfDigasdfasdfitWqweIdth6.pdf"); //for exporting to pdf
+  //  size(1150, 550, PDF, "Memory.pdf"); //for exporting to pdf
   // strokeCap(ROUND); //this matters when you zoom in, not sure whats best
   background(255); //white background 
   translate(50, 20); //center stuff so it looks nice
-  float ratio = 0.2; //size of the graphs. 0.4 works nice for showing a single sensor/strip
+  float ratio = 0.4; //size of the graphs. 0.4 works nice for showing a single sensor/strip
 
 
 
@@ -97,145 +105,36 @@ void setup() {
   //I draw stuff by looping through all my sensor objects. 
   //I filter by the criterea I am looking for and then only visualize for the subset I'm interested in.
   //right now I still do a bunch of things manually, not sure how much I'll update this, but open to requests
-  
+
   //In general I try to keep all the formatting here, so stroke(), fill() strokeWeight() etc should be used on visualizations just as any other processing object
 
   //the below is messy, if I get around to it I'll organize this better
 
+  /***Example Template***/
+
+  // vizTestTemplate(ratio);
+
+  /***Memory Effects***/
+
   fill(120);
   translate( 0, 20);
-  text("Digit Width: 35%,  Touch Size: 375%", 750, -4); //name of graph
+  text("Non Interdigitized Sensor, Memory Effect", 750, -4); //name of graph
   drawLegend(ratio); //alternatively drawAbsLegend(ratio) for normalized data
 
   pushMatrix();
   //draw some graphs
   for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-    if (textileSensors[i].spikeWidthIs(35)) {             //filter according to spikeWidth
-      if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
-        if (textileSensors[i].pointSizeIs(3.75)) {        //filter according to point szie
-          for (int x = 0; x < 7; x++) {
-            if (x<6) {
-              stroke(52*x, 180, 255-(52*x));
-              fill(52*x, 180, 255-(52*x), 80);
-              strokeWeight(1);
-              textileSensors[i].drawStripConfidence(1, x, 1.98, "BLOCKS", ratio);
+    if (textileSensors[i].spikeWidthIs(100)) {             //filter according to spikeWidth
+      if (textileSensors[i].spikeRatioIs(0)) {          //filter according to ratio
+        if (textileSensors[i].pointSizeIs(1.25)) {        //filter according to point szie
 
+          for (int y = 0; y < 11; y++) {
 
-              //  noStroke();
-              stroke(52*x, 180, 255-(52*x));
-              strokeWeight(0.5);
-              textileSensors[i].drawStripData(1, x, ratio);
-              strokeWeight(2);
-               fill(52*x, 180, 255-(52*x), 80);
-              stroke(52*x, 180, 255-(52*x));
-              textileSensors[i].drawStripDelta(1, x, ratio);
-            }
-          }
-        }
-      }
-    }
-  }
-  popMatrix();
+            stroke(23*y, 180, 255-(23*y));
+            fill(23*y, 180, 255-(23*y), 80);
+            strokeWeight(1.5);
 
-  translate(0, 1000*ratio+50);
-  fill(120);
-  text("Digit Width: 55%,  Touch Size: 375%", 750, -4); //name of graph
-  drawLegend(ratio); //draw the legend (only correct units for measures, needs to be fixed to work with deltas
-
-
-  pushMatrix();
-  //draw some graphs
-  for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-    if (textileSensors[i].spikeWidthIs(55)) {             //filter according to spikeWidth
-      if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
-        if (textileSensors[i].pointSizeIs(3.75)) {        //filter according to point szie
-          for (int x = 0; x < 7; x++) {
-            if (x<6) {
-              stroke(52*x, 180, 255-(52*x));
-              fill(52*x, 180, 255-(52*x), 80);
-              strokeWeight(1);
-              textileSensors[i].drawStripConfidence(1, x, 1.98, "BLOCKS", ratio);
-
-
-              //  noStroke();
-              stroke(52*x, 180, 255-(52*x));
-              strokeWeight(0.5);
-              textileSensors[i].drawStripData(1, x, ratio);
-              strokeWeight(2);
-              stroke(52*x, 180, 255-(52*x));
-              textileSensors[i].drawStripAverage(1, x, ratio);
-            }
-          }
-        }
-      }
-    }
-  }
-  popMatrix();
-
-  translate( 0, 1000*ratio+50);
-  fill(120);
-  text("Digit Width: 75%,  Touch Size: 375%", 750, -4); //name of graph
-  drawLegend(ratio); //draw the legend (only correct units for measures, needs to be fixed to work with deltas
-
-  pushMatrix();
-  //draw some graphs
-  for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-    if (textileSensors[i].spikeWidthIs(75)) {             //filter according to spikeWidth
-      if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
-        if (textileSensors[i].pointSizeIs(3.75)) {        //filter according to point szie
-          for (int x = 0; x < 7; x++) {
-            if (x<6) {
-              stroke(52*x, 180, 255-(52*x));
-              fill(52*x, 180, 255-(52*x), 80);
-              strokeWeight(1);
-              textileSensors[i].drawStripConfidence(1, x, 1.98, "BLOCKS", ratio);
-
-
-              //  noStroke();
-              stroke(52*x, 180, 255-(52*x));
-              strokeWeight(0.5);
-              textileSensors[i].drawStripData(1, x, ratio);
-              strokeWeight(2);
-              stroke(52*x, 180, 255-(52*x));
-              textileSensors[i].drawStripAverage(1, x, ratio);
-            }
-          }
-        }
-      }
-    }
-  }
-  popMatrix();
-
-  translate( 0, 1000*ratio+50);
-  fill(120);
-  text("Digit Width: 95%,  Touch Size: 375%", 750, -4); //name of graph
-  drawLegend(ratio); //draw the legend (only correct units for measures, needs to be fixed to work with deltas
-  pushMatrix();
-
-  //draw some graphs
-  for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-    if (textileSensors[i].spikeWidthIs(95)) {             //filter according to spikeWidth
-      if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
-        if (textileSensors[i].pointSizeIs(3.75)) {        //filter according to point szie
-          for (int x = 0; x < 7; x++) {
-            if (x<6) {
-              stroke(52*x, 180, 255-(52*x));
-              fill(52*x, 180, 255-(52*x), 80);
-              strokeWeight(1);
-              textileSensors[i].drawStripConfidence(1, x, 1.98, "BLOCKS", ratio);
-
-
-              //  noStroke();
-              stroke(52*x, 180, 255-(52*x));
-              strokeWeight(0.5);
-              textileSensors[i].drawStripData(1, x, ratio);
-              strokeWeight(2);
-              stroke(52*x, 180, 255-(52*x));
-              textileSensors[i].drawStripAverage(1, x, ratio);
-             fill(52*x, 180, 255-(52*x), 80);
-              stroke(52*x, 180, 255-(52*x));
-              textileSensors[i].drawStripDelta(1, x, ratio);
-            }
+            textileSensors[i].drawStripAtY(0, y, 2, ratio);
           }
         }
       }
