@@ -47,24 +47,12 @@ float centreOfMass(float[] weights) { //takes an array of values, and calculates
 float blobCentre(float[] stripValues, int interpolations, int threshold) { //returns the position with the highest value --> no interpolation
 
 
-  float maxValue = 0;
-  float maxIndex = 0;
-  float naivePosition;
-
-  for (int i = 0; i < stripValues.length; i++) {
-
-    if (stripValues[i] > maxValue) {
-      maxValue = stripValues[i];
-      maxIndex = i;
-    }
-  }
-
-  naivePosition = maxIndex+0.5;
-  return naivePosition;
+//
 }
 
 
 //CUBIC --------------> Use Cubic Interpolation
+//Implemented by Cedric Honnet
 float cubic(float[] niceData) {
   // This function aims to retrieve finger position
 
@@ -136,7 +124,7 @@ float CubicInterpolate(float y0, float y1,
 
 
 //MICROCHIP ------> Use Method based in Microchip WhitePaper 
-
+//Implemented by Cedric Honnet
 float microchip(float[] niceData) {
   // This function aims to retrieve finger position
 
