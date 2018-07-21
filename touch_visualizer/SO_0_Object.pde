@@ -22,7 +22,7 @@ class Sensor {
   Sensor(String filename) { //constructor
 
     pressureLevels = 2;
-    xPositions = 71;
+    xPositions = 70;
     yPositions = 11;
     stripNumber = 7;
 
@@ -68,6 +68,54 @@ class Sensor {
   }
 
   //////////////////////////////////
+  ///////////return peaks//////////
+  //////////////////////////////////
+
+  float[][] returnPeaks_COM(int pressure) { // return all peaks for centreOfmass
+    //this array needs to be in columns
+
+    // [pressure(2)][strip(7)][x(71)][y(11)]
+
+    float[] weights = new float[stripNumber];
+    float[][] positions = new float[2][xPositions*yPositions];
+    float[] averagePositions = new float[xPositions*yPositions]; //use this for proper scaling
+    int index = 0; //keep track of where we store things
+    float touchPosition;
+    float maxTouchPosition;
+    float minTouchPosition;
+
+    for (int y = 0; y < yPositions; y++) { //for each swipe
+      for (int x = 0; x < xPositions; x++) { //at each position
+        for (int strip = 0; strip < stripNumber; strip++) { //get all the strip values
+          weights[strip] = data[pressure][strip][x][y];
+        }
+        touchPosition = centreOfMass(weights);
+
+        positions[0][index] = x;//store the 'fingerpositions' here
+        positions[1][index] = touchPosition; //store the COM peaks here
+
+        index = index + 1;
+      }
+    }
+    
+    maxTouchPosition = max(positions[1]); //this should be done on averages of index 0 <----FIX!
+    minTouchPosition = min(positions[1]); //this should be done on averages of index 69 <----FIX!
+
+    for (int z = 0; z < positions[1].length; z++) { //remap to correct range
+      positions[1][z] = map(positions[1][z], minTouchPosition, maxTouchPosition, 0, 70);
+    }
+    
+    for (int z = 0; z < positions[1].length; z++) { //subtract intended position to get error
+      positions[1][z] = positions[1][z] - positions[0][z];
+    }
+
+    return positions;
+  }
+
+
+
+
+  //////////////////////////////////
   ///////visualizing methods////////
   //////////////////////////////////
 
@@ -107,7 +155,7 @@ class Sensor {
 
 
   ///rotate the representation
-  void drawStripX(int pressure, float contrast, float blockSize) { // <-- ToDo: Add a Type Parameter
+  void drawStripX(int pressure, float blockSize) { // <-- ToDo: Add a Type Parameter
     // [pressure(2)][strip(7)][x(71)][y(11)]
     stroke(200);
     strokeWeight(0.05);
@@ -123,13 +171,13 @@ class Sensor {
           fillColor[y] = data[pressure][strip][i][y];
         }
 
-        fill(mean(fillColor)/contrast);
+        fill(255-mean(fillColor)*255);
         rect(blockSize*2.5*strip, blockSize*i*0.2, blockSize*2.5, blockSize*0.2);
       }
     }
   }
 
-  void drawCentreOfGravity(int pressure, float contrast, float blockSize) { // <-- ToDo: Add a Type Parameter
+  void drawCentreOfGravity(int pressure, float blockSize) { // <-- ToDo: Add a Type Parameter
     // [pressure(2)][strip(7)][x(71)][y(11)]
     stroke(120);
     strokeWeight(0.1);
@@ -147,7 +195,7 @@ class Sensor {
         }
 
 
-        weights[strip] = 950 - mean(fillColor);
+        weights[strip] = mean(fillColor);
 
         if (weights[strip] < 20) {
           // weights[strip] = 0;
@@ -163,7 +211,7 @@ class Sensor {
       //result is on scale from 0.5 to 6.5 needs to remap from 0 to 7
       // touchPosition = map(touchPosition, 0.5, 6.5, 0, 7);
 
-     // println("index: " + i + ", position: " + touchPosition);
+      // println("index: " + i + ", position: " + touchPosition);
 
       noStroke();
       ellipse(touchPosition*blockSize*2.5, blockSize*i*0.2+(blockSize*0.2/2), 3, 3);
@@ -174,7 +222,7 @@ class Sensor {
   }
 
 
-  void drawNaiveCentre(int pressure, float contrast, float blockSize) { // <-- ToDo: Add a Type Parameter
+  void drawNaiveCentre(int pressure, float blockSize) { // <-- ToDo: Add a Type Parameter
     // [pressure(2)][strip(7)][x(71)][y(11)]
     stroke(120);
     strokeWeight(0.1);
@@ -186,7 +234,7 @@ class Sensor {
           fillColor[y] = data[pressure][strip][i][y];
         }
         //  fill(mean(fillColor)/contrast);
-        weights[strip] = 950 - mean(fillColor);
+        weights[strip] = mean(fillColor);
       }
 
       float touchPosition;
@@ -196,13 +244,12 @@ class Sensor {
       ellipse(touchPosition*blockSize*2.5, blockSize*i*0.2+(blockSize*0.2/2), 3, 3);
       stroke(120);
       strokeWeight(0.1);
-     
-     //  println("index: " + i + ", position: " + touchPosition);
 
+      //  println("index: " + i + ", position: " + touchPosition);
     }
   }
 
-  void drawMicrochip(int pressure, float contrast, float blockSize) { // <-- ToDo: Add a Type Parameter
+  void drawMicrochip(int pressure, float blockSize) { // <-- ToDo: Add a Type Parameter
     // [pressure(2)][strip(7)][x(71)][y(11)]
     stroke(120);
     strokeWeight(0.1);
@@ -214,7 +261,7 @@ class Sensor {
           fillColor[y] = data[pressure][strip][i][y];
         }
 
-        weights[strip] = 950 - mean(fillColor);
+        weights[strip] =  mean(fillColor);
       }
 
       float touchPosition;
@@ -224,13 +271,12 @@ class Sensor {
       ellipse(touchPosition*blockSize*2.5, blockSize*i*0.2+(blockSize*0.2/2), 3, 3);
       stroke(120);
       strokeWeight(0.1);
-   
-      //  println("index: " + i + ", position: " + touchPosition);
 
+      //  println("index: " + i + ", position: " + touchPosition);
     }
   }
 
-  void drawCubic(int pressure, float contrast, float blockSize) { // <-- ToDo: Add a Type Parameter
+  void drawCubic(int pressure, float blockSize) { // <-- ToDo: Add a Type Parameter
     // [pressure(2)][strip(7)][x(71)][y(11)]
     stroke(120);
     strokeWeight(0.1);
@@ -242,7 +288,7 @@ class Sensor {
           fillColor[y] = data[pressure][strip][i][y];
         }
 
-        weights[strip] = 950 - mean(fillColor);
+        weights[strip] =  mean(fillColor);
       }
 
       float touchPosition;
@@ -258,7 +304,7 @@ class Sensor {
 
 
   //this should be changed to use the functions in 'touchLocators'
-  void drawCentreOfGravityPerTrial(int pressure, int trial, float contrast, float blockSize) { // <-- ToDo: Add a Type Parameter
+  void drawCentreOfGravityPerTrial(int pressure, int trial, float blockSize) { // <-- ToDo: Add a Type Parameter
     // [pressure(2)][strip(7)][x(71)][y(11)]
 
     strokeWeight(0.1);
@@ -273,8 +319,8 @@ class Sensor {
         fillColor = data[pressure][strip][i][trial]; 
         nextFillColor = data[pressure][strip][i+1][trial];
 
-        weights[strip] = 950 - fillColor; //invert sensor values
-        nextWeights[strip] = 950 - nextFillColor;
+        weights[strip] = fillColor; //invert sensor values
+        nextWeights[strip] = nextFillColor;
 
         // rect(blockSize*2.5*strip, blockSize*i*0.2, blockSize*2.5, blockSize*0.2);
         // println("assigned strip number: " + strip + ", " + weights[strip]);

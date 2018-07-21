@@ -88,11 +88,10 @@ void setup() {
   /********* global graphics settings ************/
 
   size(1250, 950); // for visualizing on screen
-  //  size(1250, 950, PDF, "Algorithsdfms.pdf"); //for exporting to pdf
+  //  size(1250, 950, PDF, "Algoriths_CLEAN.pdf"); //for exporting to pdf
   strokeCap(ROUND); //this matters when you zoom in, not sure whats best
   background(255); //white background 
   translate(50, 20); //center stuff so it looks nice
-  float ratio = 0.4; //size of the graphs. 0.4 works nice for showing a single sensor/strip
 
 
 
@@ -122,176 +121,179 @@ void setup() {
   // drawLegend(ratio); //alternatively drawAbsLegend(ratio) for normalized data
 
   pushMatrix();
+  translate(0,200);
   //draw some graphs
   for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-    if (textileSensors[i].spikeWidthIs(100)) {             //filter according to spikeWidth
-      if (textileSensors[i].spikeRatioIs(0)) {          //filter according to ratio
-        if (textileSensors[i].pointSizeIs(1.25)) {        //filter according to point szie
-
-          textileSensors[i].drawStripX(1, 4, 20);
-          for (int y = 0; y < 11; y++) {
-            fill(255, 255, 255);
-            textileSensors[i].drawNaiveCentre(1, 4, 20);
-             fill(255, 0, 0);
-            textileSensors[i].drawMicrochip(1, 4, 20);
-             fill(0, 255, 0);
-            textileSensors[i].drawCubic(1, 4, 20);
-              fill(0, 0, 255);
-            textileSensors[i].drawCentreOfGravity(1, 4, 20);
-          //  stroke(23*y, 180, 255-(23*y));
-           // fill(23*y, 180, 255-(23*y));
-            strokeWeight(1.5);
-           // textileSensors[i].drawCentreOfGravityPerTrial(1, y, 4, 20);
-          }
-        }
-      }
-    }
-  }
-  popMatrix();
-
-  translate(400, 0);
-  pushMatrix();
-  //draw some graphs
-  for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-    if (textileSensors[i].spikeWidthIs(100)) {             //filter according to spikeWidth
-      if (textileSensors[i].spikeRatioIs(0)) {          //filter according to ratio
-        if (textileSensors[i].pointSizeIs(2.5)) {        //filter according to point szie
-          textileSensors[i].drawStripX(1, 4, 20);
-          for (int y = 0; y < 11; y++) {
-
-            textileSensors[i].drawNaiveCentre(1, 4, 20);
-            stroke(23*y, 180, 255-(23*y));
-            fill(23*y, 180, 255-(23*y));
-            strokeWeight(1.5);
-            textileSensors[i].drawCentreOfGravityPerTrial(1, y, 4, 20);
-          }
-        }
-      }
-    }
-  }
-  popMatrix();
-
-
-
-  translate(400, 0);
-
-  pushMatrix();
-  //draw some graphs
-  for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-    if (textileSensors[i].spikeWidthIs(100)) {             //filter according to spikeWidth
-      if (textileSensors[i].spikeRatioIs(0)) {          //filter according to ratio
-        if (textileSensors[i].pointSizeIs(3.75)) {        //filter according to point szie
-
-          textileSensors[i].drawStripX(1, 4, 20);
-          for (int y = 0; y < 11; y++) {
-
-           fill(255, 255, 255);
-            textileSensors[i].drawNaiveCentre(1, 4, 20);
-             fill(255, 0, 0);
-            textileSensors[i].drawMicrochip(1, 4, 20);
-             fill(0, 255, 0);
-            textileSensors[i].drawCubic(1, 4, 20);
-              fill(0, 0, 255);
-            textileSensors[i].drawCentreOfGravity(1, 4, 20);
-          //  stroke(23*y, 180, 255-(23*y));
-           // fill(23*y, 180, 255-(23*y));
-            strokeWeight(1.5);
-           // textileSensors[i].drawCentreOfGravityPerTrial(1, y, 4, 20);
-          }
-        }
-      }
-    }
-  }
-  popMatrix();
-
-  translate(-800, 400);
-
-  pushMatrix();
-  //draw some graphs
-  for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-    if (textileSensors[i].spikeWidthIs(95)) {             //filter according to spikeWidth
-      if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
-        if (textileSensors[i].pointSizeIs(1.25)) {        //filter according to point szie
-
-          textileSensors[i].drawStripX(1, 4, 20);
-          for (int y = 0; y < 11; y++) {
-
-          fill(255, 255, 255);
-            textileSensors[i].drawNaiveCentre(1, 4, 20);
-             fill(255, 0, 0);
-            textileSensors[i].drawMicrochip(1, 4, 20);
-             fill(0, 255, 0);
-            textileSensors[i].drawCubic(1, 4, 20);
-              fill(0, 0, 255);
-            textileSensors[i].drawCentreOfGravity(1, 4, 20);
-          //  stroke(23*y, 180, 255-(23*y));
-           // fill(23*y, 180, 255-(23*y));
-            strokeWeight(1.5);
-           // textileSensors[i].drawCentreOfGravityPerTrial(1, y, 4, 20);
-          }
-        }
-      }
-    }
-  }
-  popMatrix();
-
-  translate(400, 0);
-  pushMatrix();
-  //draw some graphs
-  for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-    if (textileSensors[i].spikeWidthIs(95)) {             //filter according to spikeWidth
-      if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
-        if (textileSensors[i].pointSizeIs(2.5)) {        //filter according to point szie
-
-          textileSensors[i].drawStripX(1, 4, 20);
-          for (int y = 0; y < 11; y++) {
-
-
-
-            textileSensors[i].drawNaiveCentre(1, 4, 20);
-            stroke(23*y, 180, 255-(23*y));
-            fill(23*y, 180, 255-(23*y));
-            strokeWeight(1.5);
-            textileSensors[i].drawCentreOfGravityPerTrial(1, y, 4, 20);
-          }
-        }
-      }
-    }
-  }
-  popMatrix();
-
-
-
-  translate(400, 0);
-
-  pushMatrix();
-  //draw some graphs
-  for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-    if (textileSensors[i].spikeWidthIs(95)) {             //filter according to spikeWidth
+    if (textileSensors[i].spikeWidthIs(35)) {             //filter according to spikeWidth
       if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
         if (textileSensors[i].pointSizeIs(3.75)) {        //filter according to point szie
 
-          textileSensors[i].drawStripX(1, 4, 20);
-          for (int y = 0; y < 11; y++) {
-
-          
-      
-            fill(255, 255, 255);
-            textileSensors[i].drawNaiveCentre(1, 4, 20);
-             fill(255, 0, 0);
-            textileSensors[i].drawMicrochip(1, 4, 20);
-             fill(0, 255, 0);
-            textileSensors[i].drawCubic(1, 4, 20);
-              fill(0, 0, 255);
-            textileSensors[i].drawCentreOfGravity(1, 4, 20);
-          //  stroke(23*y, 180, 255-(23*y));
-           // fill(23*y, 180, 255-(23*y));
-            strokeWeight(1.5);
-           // textileSensors[i].drawCentreOfGravityPerTrial(1, y, 4, 20);
+          float[][] positions;
+          positions = textileSensors[i].returnPeaks_COM(1);
+          println(positions.length);
+          println(positions[0].length);
+          println(positions[1][68]);
+          println(positions[1][69]);
+          println(positions[1][70]);
+          println(positions[1][71]);
+          for (int z = 0; z < positions[0].length-1; z++) {
+            println("Assigned: " + positions[0][z] + " Error: " + positions[1][z]);
+            if (positions[0][z] < 68) {
+              line(positions[0][z]*10, positions[1][z]*20, positions[0][z+1]*10, positions[1][z+1]*20);
+              ellipse(positions[0][z]*10, 0, 2, 2);
+            }
           }
         }
       }
     }
   }
   popMatrix();
+
+  /*
+  translate(400, 0);
+   pushMatrix();
+   //draw some graphs
+   for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
+   if (textileSensors[i].spikeWidthIs(100)) {             //filter according to spikeWidth
+   if (textileSensors[i].spikeRatioIs(0)) {          //filter according to ratio
+   if (textileSensors[i].pointSizeIs(2.5)) {        //filter according to point szie
+   textileSensors[i].drawStripX(1, 20);
+   for (int y = 0; y < 11; y++) {
+   
+   textileSensors[i].drawNaiveCentre(1, 20);
+   stroke(23*y, 180, 255-(23*y));
+   fill(23*y, 180, 255-(23*y));
+   strokeWeight(1.5);
+   textileSensors[i].drawCentreOfGravityPerTrial(1, y, 20);
+   }
+   }
+   }
+   }
+   }
+   popMatrix();
+   
+   
+   
+   translate(400, 0);
+   
+   pushMatrix();
+   //draw some graphs
+   for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
+   if (textileSensors[i].spikeWidthIs(100)) {             //filter according to spikeWidth
+   if (textileSensors[i].spikeRatioIs(0)) {          //filter according to ratio
+   if (textileSensors[i].pointSizeIs(3.75)) {        //filter according to point szie
+   
+   textileSensors[i].drawStripX(1, 20);
+   for (int y = 0; y < 11; y++) {
+   
+   fill(255, 255, 255);
+   textileSensors[i].drawNaiveCentre(1, 20);
+   fill(255, 0, 0);
+   textileSensors[i].drawMicrochip(1, 20);
+   fill(0, 255, 0);
+   textileSensors[i].drawCubic(1, 20);
+   fill(0, 0, 255);
+   textileSensors[i].drawCentreOfGravity(1, 20);
+   //  stroke(23*y, 180, 255-(23*y));
+   // fill(23*y, 180, 255-(23*y));
+   strokeWeight(1.5);
+   // textileSensors[i].drawCentreOfGravityPerTrial(1, y, 4, 20);
+   }
+   }
+   }
+   }
+   }
+   popMatrix();
+   
+   translate(-800, 400);
+   
+   pushMatrix();
+   //draw some graphs
+   for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
+   if (textileSensors[i].spikeWidthIs(95)) {             //filter according to spikeWidth
+   if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
+   if (textileSensors[i].pointSizeIs(1.25)) {        //filter according to point szie
+   
+   textileSensors[i].drawStripX(1, 20);
+   for (int y = 0; y < 11; y++) {
+   
+   fill(255, 255, 255);
+   textileSensors[i].drawNaiveCentre(1, 20);
+   fill(255, 0, 0);
+   textileSensors[i].drawMicrochip(1, 20);
+   fill(0, 255, 0);
+   textileSensors[i].drawCubic(1, 20);
+   fill(0, 0, 255);
+   textileSensors[i].drawCentreOfGravity(1, 20);
+   //  stroke(23*y, 180, 255-(23*y));
+   // fill(23*y, 180, 255-(23*y));
+   strokeWeight(1.5);
+   // textileSensors[i].drawCentreOfGravityPerTrial(1, y, 4, 20);
+   }
+   }
+   }
+   }
+   }
+   popMatrix();
+   
+   translate(400, 0);
+   pushMatrix();
+   //draw some graphs
+   for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
+   if (textileSensors[i].spikeWidthIs(95)) {             //filter according to spikeWidth
+   if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
+   if (textileSensors[i].pointSizeIs(2.5)) {        //filter according to point szie
+   
+   textileSensors[i].drawStripX(1, 20);
+   for (int y = 0; y < 11; y++) {
+   
+   
+   
+   textileSensors[i].drawNaiveCentre(1, 20);
+   stroke(23*y, 180, 255-(23*y));
+   fill(23*y, 180, 255-(23*y));
+   strokeWeight(1.5);
+   textileSensors[i].drawCentreOfGravityPerTrial(1, y, 20);
+   }
+   }
+   }
+   }
+   }
+   popMatrix();
+   
+   
+   
+   translate(400, 0);
+   
+   pushMatrix();
+   //draw some graphs
+   for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
+   if (textileSensors[i].spikeWidthIs(95)) {             //filter according to spikeWidth
+   if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
+   if (textileSensors[i].pointSizeIs(3.75)) {        //filter according to point szie
+   
+   textileSensors[i].drawStripX(1, 20);
+   for (int y = 0; y < 11; y++) {
+   
+   
+   
+   fill(255, 255, 255);
+   textileSensors[i].drawNaiveCentre(1, 20);
+   fill(255, 0, 0);
+   textileSensors[i].drawMicrochip(1, 20);
+   fill(0, 255, 0);
+   textileSensors[i].drawCubic(1, 20);
+   fill(0, 0, 255);
+   textileSensors[i].drawCentreOfGravity(1, 20);
+   //  stroke(23*y, 180, 255-(23*y));
+   // fill(23*y, 180, 255-(23*y));
+   strokeWeight(1.5);
+   // textileSensors[i].drawCentreOfGravityPerTrial(1, y, 4, 20);
+   }
+   }
+   }
+   }
+   }
+   popMatrix();
+   */
 }

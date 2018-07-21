@@ -1,4 +1,5 @@
 
+// rescaled data has dummy line2!!!!
 
 //NAIVE --------------> Chose Highest Strip Value
 
@@ -38,17 +39,18 @@ float centreOfMass(float[] weights) { //takes an array of values, and calculates
   }
 
   centreOfMass = weightLocation / weightSum;
+ // println(centreOfMass);
   return centreOfMass;
 }
 
 
 //BLOB CENTRE -------------> Use Blob Tracking to detect touch-points. Use Centre of Blob for Touch Position. Interpolate and adjust threshold for precision.
 
-float blobCentre(float[] stripValues, int interpolations, int threshold) { //returns the position with the highest value --> no interpolation
+//float blobCentre(float[] stripValues, int interpolations, int threshold) { //returns the position with the highest value --> no interpolation
 
 
 //
-}
+//}
 
 
 //CUBIC --------------> Use Cubic Interpolation
