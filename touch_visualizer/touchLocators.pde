@@ -34,7 +34,7 @@ float centreOfMass(float[] weights) { //takes an array of values, and calculates
 
   for (int i = 0; i < weights.length; i++) {
 
-    weightLocation = weightLocation + weights[i]*(i + 0.5); //sum of all weights multiplied by their position
+    weightLocation = weightLocation + weights[i]*(i); //sum of all weights multiplied by their position
     weightSum = weightSum + weights[i]; //sum of all weights
   }
 

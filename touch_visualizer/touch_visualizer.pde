@@ -14,80 +14,12 @@ void setup() {
   }
 
 
-  /**********************Begin Instructions**************************************/
 
-  /*********************/
-  /**Quarying Methods **/
-  /*********************/
-
-  /*
- 
-   sensor.spikeWidthIs --> returns width of spike as int
-   sensor.spikeRatioIs --> returns ratio (height) of spike as int
-   sensor.pointSizeIs --> returns touch-point size as float
-   
-   */
-
-  /**************************/
-  /**Visualization Methods **/
-  /**************************/
-
-  /*
-  --> plot all data 
-   sensor.drawStrData(int pressure, int stripIndex, float yScale); 
-   
-   pressure     --> 0 for Low, 1 for High
-   stripIndex   --> 0 - 7
-   yScale       --> 1 == 1 pixel per sampled bit, 0.5 == 1 pixel per 2 sampled bits etc.
-   
-   --> plot all x for specific y (e.g. to show memory effects) 
-   sensor.drawStripAtY(int pressure, int yPosition, int stripIndex, float yScale);
-   
-   pressure     --> 0 for Low, 1 for High
-   yPosition    --> 0 to 11, units of 2 mm (or was it 2.5? ASK VICTOR!)
-   stripIndex   --> 0 - 7
-   yScale       --> 1 == 1 pixel per sampled bit, 0.5 == 1 pixel per 2 sampled bits etc.
-   
-   --> plot average
-   drawStripAverage(int pressure, int strip, float scale) 
-   
-   pressure     --> 0 for Low, 1 for High
-   stripIndex   --> 0 - 7
-   yScale       --> 1 == 1 pixel per sampled bit, 0.5 == 1 pixel per 2 sampled bits etc.
-   
-   --> plot Confidence Interval
-   sensor.drawStripConfidence(int pressure, int stripIndex, float confidenceInterval, String type, float yScale) 
-   
-   pressure              --> 0 for Low, 1 for High
-   stripIndex            --> 0 - 7
-   yScale                --> 1 == 1 pixel per sampled bit, 0.5 == 1 pixel per 2 sampled bits etc.
-   confidenceInterval    --> 1.645 ==> 90%, 1.98 ==> 95%
-   type                  --> "BLOCKS", "CURVE"
-   
-   -- plot deltas between xPositions
-   sensor.drawStripDelta(int pressure, int stripIndex, float yScale)
-   
-   drawStripAverage(int pressure, int strip, float scale) 
-   pressure     --> 0 for Low, 1 for High
-   stripIndex   --> 0 - 7
-   yScale       --> 1 == 1 pixel per sampled bit, 0.5 == 1 pixel per 2 sampled bits etc.
-   
-   -->plot estimate of strip quality (buggy)
-   
-   Sensor.drawStripQuality(int pressure, int stripIndex, float yScale)
-   pressure     --> 0 for Low, 1 for High
-   stripIndex   --> 0 - 7
-   yScale       --> 1 == 1 pixel per sampled bit, 0.5 == 1 pixel per 2 sampled bits etc.
-   */
-
-
-
-  /**********************End Instructions**************************/
 
 
   /********* global graphics settings ************/
 
-  size(1250, 950); // for visualizing on screen
+  size(700, 1250); // for visualizing on screen
   //  size(1250, 950, PDF, "Algoriths_CLEAN.pdf"); //for exporting to pdf
   strokeCap(ROUND); //this matters when you zoom in, not sure whats best
   background(255); //white background 
@@ -114,186 +46,58 @@ void setup() {
   // vizTestTemplate(ratio);
 
   /***Memory Effects***/
+    println("Width, Length, TouchSize, Algorithm, Error");
+    float[][] positions; 
+    float mean;
+    for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
+  
+    print(textileSensors[i].spikeWidth);
+    print(", ");
+    print(textileSensors[i].spikeRatio);
+    print(", ");
+    print(textileSensors[i].pointSize);
+    print(", 0");
+    print(", NAIVE");
+   
+    positions = textileSensors[i].returnPeaks("NAIVE", 0);
+    mean = meanAbs(positions[2]);
+    print(", ");
+    println(mean);
+    }
+
+ //     if (textileSensors[i].pointSizeIs(1.25)) {             
+    //    
+       
+        /*
 
   fill(120);
   translate( 0, 20);
-  text("Non Interdigitized Sensor, Memory Effect", 750, -4); //name of graph
+  //name of graph
   // drawLegend(ratio); //alternatively drawAbsLegend(ratio) for normalized data
 
   pushMatrix();
-  translate(0,200);
-  //draw some graphs
-  for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-    if (textileSensors[i].spikeWidthIs(35)) {             //filter according to spikeWidth
-      if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
-        if (textileSensors[i].pointSizeIs(3.75)) {        //filter according to point szie
+  translate(0, 120);
+  fill(0, 200);
+  //  text("Digit Height: 55%, 70%, 85%, 100%, Digit Width 35%", 0, -70);
 
-          float[][] positions;
-          positions = textileSensors[i].returnPeaks_COM(1);
-          println(positions.length);
-          println(positions[0].length);
-          println(positions[1][68]);
-          println(positions[1][69]);
-          println(positions[1][70]);
-          println(positions[1][71]);
-          for (int z = 0; z < positions[0].length-1; z++) {
-            println("Assigned: " + positions[0][z] + " Error: " + positions[1][z]);
-            if (positions[0][z] < 68) {
-              line(positions[0][z]*10, positions[1][z]*20, positions[0][z+1]*10, positions[1][z+1]*20);
-              ellipse(positions[0][z]*10, 0, 2, 2);
-            }
-          }
-        }
-      }
-    }
-  }
+  //draw some graphs
+  pushMatrix();
+  stroke(100, 0, 0, 120);
+  firstRow("CUBIC");
   popMatrix();
 
-  /*
-  translate(400, 0);
-   pushMatrix();
-   //draw some graphs
-   for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-   if (textileSensors[i].spikeWidthIs(100)) {             //filter according to spikeWidth
-   if (textileSensors[i].spikeRatioIs(0)) {          //filter according to ratio
-   if (textileSensors[i].pointSizeIs(2.5)) {        //filter according to point szie
-   textileSensors[i].drawStripX(1, 20);
-   for (int y = 0; y < 11; y++) {
-   
-   textileSensors[i].drawNaiveCentre(1, 20);
-   stroke(23*y, 180, 255-(23*y));
-   fill(23*y, 180, 255-(23*y));
-   strokeWeight(1.5);
-   textileSensors[i].drawCentreOfGravityPerTrial(1, y, 20);
-   }
-   }
-   }
-   }
-   }
-   popMatrix();
-   
-   
-   
-   translate(400, 0);
-   
-   pushMatrix();
-   //draw some graphs
-   for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-   if (textileSensors[i].spikeWidthIs(100)) {             //filter according to spikeWidth
-   if (textileSensors[i].spikeRatioIs(0)) {          //filter according to ratio
-   if (textileSensors[i].pointSizeIs(3.75)) {        //filter according to point szie
-   
-   textileSensors[i].drawStripX(1, 20);
-   for (int y = 0; y < 11; y++) {
-   
-   fill(255, 255, 255);
-   textileSensors[i].drawNaiveCentre(1, 20);
-   fill(255, 0, 0);
-   textileSensors[i].drawMicrochip(1, 20);
-   fill(0, 255, 0);
-   textileSensors[i].drawCubic(1, 20);
-   fill(0, 0, 255);
-   textileSensors[i].drawCentreOfGravity(1, 20);
-   //  stroke(23*y, 180, 255-(23*y));
-   // fill(23*y, 180, 255-(23*y));
-   strokeWeight(1.5);
-   // textileSensors[i].drawCentreOfGravityPerTrial(1, y, 4, 20);
-   }
-   }
-   }
-   }
-   }
-   popMatrix();
-   
-   translate(-800, 400);
-   
-   pushMatrix();
-   //draw some graphs
-   for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-   if (textileSensors[i].spikeWidthIs(95)) {             //filter according to spikeWidth
-   if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
-   if (textileSensors[i].pointSizeIs(1.25)) {        //filter according to point szie
-   
-   textileSensors[i].drawStripX(1, 20);
-   for (int y = 0; y < 11; y++) {
-   
-   fill(255, 255, 255);
-   textileSensors[i].drawNaiveCentre(1, 20);
-   fill(255, 0, 0);
-   textileSensors[i].drawMicrochip(1, 20);
-   fill(0, 255, 0);
-   textileSensors[i].drawCubic(1, 20);
-   fill(0, 0, 255);
-   textileSensors[i].drawCentreOfGravity(1, 20);
-   //  stroke(23*y, 180, 255-(23*y));
-   // fill(23*y, 180, 255-(23*y));
-   strokeWeight(1.5);
-   // textileSensors[i].drawCentreOfGravityPerTrial(1, y, 4, 20);
-   }
-   }
-   }
-   }
-   }
-   popMatrix();
-   
-   translate(400, 0);
-   pushMatrix();
-   //draw some graphs
-   for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-   if (textileSensors[i].spikeWidthIs(95)) {             //filter according to spikeWidth
-   if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
-   if (textileSensors[i].pointSizeIs(2.5)) {        //filter according to point szie
-   
-   textileSensors[i].drawStripX(1, 20);
-   for (int y = 0; y < 11; y++) {
-   
-   
-   
-   textileSensors[i].drawNaiveCentre(1, 20);
-   stroke(23*y, 180, 255-(23*y));
-   fill(23*y, 180, 255-(23*y));
-   strokeWeight(1.5);
-   textileSensors[i].drawCentreOfGravityPerTrial(1, y, 20);
-   }
-   }
-   }
-   }
-   }
-   popMatrix();
-   
-   
-   
-   translate(400, 0);
-   
-   pushMatrix();
-   //draw some graphs
-   for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-   if (textileSensors[i].spikeWidthIs(95)) {             //filter according to spikeWidth
-   if (textileSensors[i].spikeRatioIs(100)) {          //filter according to ratio
-   if (textileSensors[i].pointSizeIs(3.75)) {        //filter according to point szie
-   
-   textileSensors[i].drawStripX(1, 20);
-   for (int y = 0; y < 11; y++) {
-   
-   
-   
-   fill(255, 255, 255);
-   textileSensors[i].drawNaiveCentre(1, 20);
-   fill(255, 0, 0);
-   textileSensors[i].drawMicrochip(1, 20);
-   fill(0, 255, 0);
-   textileSensors[i].drawCubic(1, 20);
-   fill(0, 0, 255);
-   textileSensors[i].drawCentreOfGravity(1, 20);
-   //  stroke(23*y, 180, 255-(23*y));
-   // fill(23*y, 180, 255-(23*y));
-   strokeWeight(1.5);
-   // textileSensors[i].drawCentreOfGravityPerTrial(1, y, 4, 20);
-   }
-   }
-   }
-   }
-   }
-   popMatrix();
-   */
+  translate(0, 230);
+
+  pushMatrix();
+  stroke(0, 0, 100, 120);
+  firstRow("MICROCHIP");
+  popMatrix();
+  
+  translate(0, 230);
+  
+  pushMatrix();
+  stroke(0, 100, 0, 120);
+  firstRow("COM");
+  popMatrix();
+  */
 }

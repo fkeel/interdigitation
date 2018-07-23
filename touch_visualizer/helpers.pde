@@ -11,6 +11,17 @@ float mean(float[] data) {
   return mean;
 }
 
+float meanAbs(float[] data) { //average of absolute values
+  int counter = 0;
+  float total = 0;
+  for (int i = 0; i < data.length; i++) {
+    total = total+ abs(data[i]);
+    counter++;
+  }
+  float meanOfAbs = total / counter;
+  return meanOfAbs;
+}
+
 
 float standardDeviation(float[] data) {
   int n = 0;

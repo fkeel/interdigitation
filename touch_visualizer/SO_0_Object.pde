@@ -71,44 +71,75 @@ class Sensor {
   ///////////return peaks//////////
   //////////////////////////////////
 
-  float[][] returnPeaks_COM(int pressure) { // return all peaks for centreOfmass
-    //this array needs to be in columns
+  float[][] returnPeaks(String type, int pressure) { // return all peaks for centreOfmass
+    //this array needs to be in columns -- X, Y, Error, R
 
     // [pressure(2)][strip(7)][x(71)][y(11)]
 
     float[] weights = new float[stripNumber];
-    float[][] positions = new float[2][xPositions*yPositions];
-    float[] averagePositions = new float[xPositions*yPositions]; //use this for proper scaling
+    float[][] positions = new float[3][xPositions*yPositions];
     int index = 0; //keep track of where we store things
-    float touchPosition;
-    float maxTouchPosition;
-    float minTouchPosition;
+    float touchPosition = 0;
+    float maxTouchPosition= 0;
+    float minTouchPosition= 0;
+    float intercept = 0;
+    float slope = 0;
+    float r;
 
     for (int y = 0; y < yPositions; y++) { //for each swipe
       for (int x = 0; x < xPositions; x++) { //at each position
         for (int strip = 0; strip < stripNumber; strip++) { //get all the strip values
           weights[strip] = data[pressure][strip][x][y];
         }
-        touchPosition = centreOfMass(weights);
+
+        if (type.equals("CUBIC")) {
+          touchPosition = cubic(weights);
+        } else if (type.equals("COM")) {
+          touchPosition = centreOfMass(weights);
+        } else if (type.equals("MICROCHIP")) {
+          touchPosition = microchip(weights);
+        } else if (type.equals("NAIVE")) {
+          touchPosition = naive(weights);
+        } else {
+          println("ERROR: UNKNOWN TOUCH LOCATOR");
+        }
 
         positions[0][index] = x;//store the 'fingerpositions' here
-        positions[1][index] = touchPosition; //store the COM peaks here
+        positions[1][index] = y; //------------> This assumes the files are ordered. They currently are. But it could lead to a bug later.
+        positions[2][index] = touchPosition; //store the COM peaks here
 
         index = index + 1;
       }
     }
-    
-    maxTouchPosition = max(positions[1]); //this should be done on averages of index 0 <----FIX!
-    minTouchPosition = min(positions[1]); //this should be done on averages of index 69 <----FIX!
 
     for (int z = 0; z < positions[1].length; z++) { //remap to correct range
-      positions[1][z] = map(positions[1][z], minTouchPosition, maxTouchPosition, 0, 70);
+      if (positions[0][z] == 0) {
+        minTouchPosition = minTouchPosition + positions[2][z];
+      }
+
+      if (positions[0][z] == 69) {
+        maxTouchPosition = maxTouchPosition + positions[2][z];
+      }
     }
-    
-    for (int z = 0; z < positions[1].length; z++) { //subtract intended position to get error
-      positions[1][z] = positions[1][z] - positions[0][z];
+    minTouchPosition = minTouchPosition / yPositions;
+    maxTouchPosition = maxTouchPosition / yPositions;
+
+    for (int z = 0; z < positions[2].length; z++) { //remap to correct range
+      positions[2][z] = map(positions[2][z], minTouchPosition, maxTouchPosition, 0, 69);
     }
 
+    intercept = intercept(positions[0], positions[2]);  //get intercept to centre the measures around 0
+    slope = 1 - slope(positions[0], positions[2]);  //get the slope (using 1-slope as I'm only interested how far its different
+
+    r = correlation(positions[0], positions[2]); //currently not used. just there in case its needed
+
+
+    // use intercept and slope to align measured positions
+    for (int z = 0; z < positions[2].length; z++) { //subtract intended position to get error
+      positions[2][z] = positions[2][z] - positions[0][z]-intercept+positions[2][z]*slope;
+    }
+
+ //   println(slope);
     return positions;
   }
 
