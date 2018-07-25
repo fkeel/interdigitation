@@ -45,12 +45,13 @@ void setup() {
 
   // vizTestTemplate(ratio);
 
- 
-    println("Width, Length, TouchSize, Algorithm, Error");
-    float[][] positions; 
-    float mean;
-    for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-  positions = textileSensors[i].returnPeaks("GAUSSIAN", 1);
+
+  println("Width, Length, TouchSize, Algorithm, Error");
+  float[][] positions; 
+  float mean;
+  float sd;
+  for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
+    positions = textileSensors[i].returnPeaks("LINEAR", 0);
 
     print(textileSensors[i].spikeWidth);
     print(", ");
@@ -59,47 +60,50 @@ void setup() {
     print(textileSensors[i].pointSize);
     print(", 0");
     print(", NAIVE");
-   
-   
+
+
     mean = meanAbs(positions[2]);
     print(", ");
-    println(mean);
-  
-    }
+    print(mean);
 
- //     if (textileSensors[i].pointSizeIs(1.25)) {             
-    //    
-       
-        /*
+    sd = standardDeviationAbs(positions[2]);
+    print(", ");
+    println(sd);
+  }
 
-  fill(120);
-  translate( 0, 20);
-  //name of graph
-  // drawLegend(ratio); //alternatively drawAbsLegend(ratio) for normalized data
+  //     if (textileSensors[i].pointSizeIs(1.25)) {             
+  //    
 
-  pushMatrix();
-  translate(0, 120);
-  fill(0, 200);
-  //  text("Digit Height: 55%, 70%, 85%, 100%, Digit Width 35%", 0, -70);
+  /*
 
-  //draw some graphs
-  pushMatrix();
-  stroke(100, 0, 0, 120);
-  firstRow("CUBIC");
-  popMatrix();
-
-  translate(0, 230);
-
-  pushMatrix();
-  stroke(0, 0, 100, 120);
-  firstRow("MICROCHIP");
-  popMatrix();
-  
-  translate(0, 230);
-  
-  pushMatrix();
-  stroke(0, 100, 0, 120);
-  firstRow("COM");
-  popMatrix();
-  */
+   fill(120);
+   translate( 0, 20);
+   //name of graph
+   // drawLegend(ratio); //alternatively drawAbsLegend(ratio) for normalized data
+   
+   pushMatrix();
+   translate(0, 120);
+   fill(0, 200);
+   //  text("Digit Height: 55%, 70%, 85%, 100%, Digit Width 35%", 0, -70);
+   
+   //draw some graphs
+   pushMatrix();
+   stroke(100, 0, 0, 120);
+   firstRow("CUBIC");
+   popMatrix();
+   
+   translate(0, 230);
+   
+   pushMatrix();
+   stroke(0, 0, 100, 120);
+   firstRow("MICROCHIP");
+   popMatrix();
+   
+   translate(0, 230);
+   
+   pushMatrix();
+   stroke(0, 100, 0, 120);
+   firstRow("COM");
+   popMatrix();
+   */
 }

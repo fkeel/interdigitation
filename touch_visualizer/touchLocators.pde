@@ -202,13 +202,17 @@ float blaisRioux(float[] stripValues) {
   //As the original peak-detector assumes a continuous stream of data, it needs to be modified for the sensor.
   //We use the modified second order filter suggested in:  Robert Fisher and K. Naidu. 2001. A Comparison of Algorithms for Subpixel Peak Detection. September 2001. https://doi.org/10.1007/978-3-642-58288-2
   int maxIndex = naive(stripValues);
-  int previous = previous(maxIndex);
   int next = next(maxIndex, stripValues);
+  int previous = previous(maxIndex);
   float offset;
 
-  offset = 0.5 * ( secondOrderFilter(stripValues, maxIndex) /   ( secondOrderFilter(stripValues, maxIndex) - secondOrderFilter(stripValues, previous)));
-
-  return maxIndex + offset;
+  if (stripValues[next] > stripValues[previous]) {
+    offset = (secondOrderFilter(stripValues, maxIndex)) / ( secondOrderFilter(stripValues, maxIndex) - secondOrderFilter(stripValues, next));
+  } else {
+    offset = (((secondOrderFilter(stripValues, previous)) / ( secondOrderFilter(stripValues, previous) - secondOrderFilter(stripValues, next))) -1);
+  }
+//  println("offset: " + offset);
+  return maxIndex + (offset * 0.5);
 }
 
 
@@ -219,7 +223,8 @@ float secondOrderFilter(float[] stripValues, int index) { //for Blais and Rioux 
 
   float filteredValue;
 
-  filteredValue = previous - next;
+  filteredValue = stripValues[previous] - stripValues[next];
+ // println("filtered: " + filteredValue);
 
   return filteredValue;
 }
