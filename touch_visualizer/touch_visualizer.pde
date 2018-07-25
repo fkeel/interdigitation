@@ -45,12 +45,13 @@ void setup() {
 
   // vizTestTemplate(ratio);
 
-  /***Memory Effects***/
+ 
     println("Width, Length, TouchSize, Algorithm, Error");
     float[][] positions; 
     float mean;
     for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-  
+  positions = textileSensors[i].returnPeaks("GAUSSIAN", 1);
+
     print(textileSensors[i].spikeWidth);
     print(", ");
     print(textileSensors[i].spikeRatio);
@@ -59,10 +60,11 @@ void setup() {
     print(", 0");
     print(", NAIVE");
    
-    positions = textileSensors[i].returnPeaks("NAIVE", 0);
+   
     mean = meanAbs(positions[2]);
     print(", ");
     println(mean);
+  
     }
 
  //     if (textileSensors[i].pointSizeIs(1.25)) {             

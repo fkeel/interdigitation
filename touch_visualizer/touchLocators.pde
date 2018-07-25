@@ -1,7 +1,25 @@
 
 // rescaled data has dummy line2!!!!
 
-
+/*-----------Simple
+/*- Naive
+/*- Linear
+ 
+/*----------- Curve Fitting
+/*- Gaussian
+/*- Cubic
+/*- Parabolic
+ 
+/*----------- Curve Fitting + Filtering
+/*- Blais Rioux Detector
+ 
+/*----------- Geometric
+/*- Centre Of Mass (COM7)
+/*- Microchip (COM3)
+ 
+/*----------- Computer Vision Inspired
+/*- Blob
+ 
 /*------------------------------------------------------*/
 /* NAIVE - Returns the max strip. Used as reference 
 /* algorithm and as helper function for some of the other algorithms
@@ -24,6 +42,31 @@ int naive(float[] stripValues) { //returns the position with the highest value -
   return naivePosition;
 }
 
+/*------------------------------------------------------*/
+/* LINEAR - Assumes that the spread of intensity values 
+/* before and after the peak is linear.
+/*------------------------------------------------------*/
+float linear(float[] stripValues) {
+  //from: Robert Fisher and K. Naidu. 2001. A Comparison of Algorithms for Subpixel Peak Detection. September 2001. https://doi.org/10.1007/978-3-642-58288-2
+  //See also: Humza Akhtar and Ramakrishna Kakarala. 2014. A methodology for evaluating accuracy of capacitive touch sensing grid patterns. IEEE/OSA Journal of Display Technology 10, 8: 672–682. https://doi.org/10.1109/JDT.2014.2312975
+
+  int maxIndex = naive(stripValues);
+  int previous = previous(maxIndex);
+  int next = next(maxIndex, stripValues);
+
+  float offset;
+
+  if (stripValues[next] > stripValues[previous]) {
+    offset = 0.5 * ((stripValues[next] - stripValues[previous]) / (stripValues[maxIndex] - stripValues[previous]));
+  } else {
+    offset = 0.5 * ((stripValues[next] - stripValues[previous]) / (stripValues[maxIndex] + stripValues[previous]));
+  }
+
+  float touchPosition = maxIndex + offset;
+
+  return touchPosition;
+}
+
 
 /*------------------------------------------------------*/
 /* GAUSSIAN - Uses the three highest, contiguous intensity 
@@ -34,135 +77,26 @@ float gaussian(float[] stripValues) {
   //from: Robert Fisher and K. Naidu. 2001. A Comparison of Algorithms for Subpixel Peak Detection. September 2001. https://doi.org/10.1007/978-3-642-58288-2
   //See also: Humza Akhtar and Ramakrishna Kakarala. 2014. A methodology for evaluating accuracy of capacitive touch sensing grid patterns. IEEE/OSA Journal of Display Technology 10, 8: 672–682. https://doi.org/10.1109/JDT.2014.2312975
 
-  //offset = 0.5 * ( ln(maxIndex-1)-ln(maxIndex+1) / lg(maxIndex-1) - 2ln(maxIndex) + ln(maxIndex+1) )
+  //offset = 0.5 * ( ln(previous)-ln(next) / lg(previous) - 2ln(maxIndex) + ln(next) )
   //log() in processing is the natural logarithm
 
   int maxIndex = naive(stripValues);
-  float offset = 0.5 * ((log(stripValues[maxIndex-1]) - log (stripValues[maxIndex+1])) / (log(stripValues[maxIndex-1]) - 2*log(stripValues[maxIndex]) + log(stripValues[maxIndex+1])));
-  float touchPosition = maxIndex + offset;
-
-  return touchPosition;
-}
-
-/*------------------------------------------------------*/
-/* LINEAR - Assumes that the spread of intensity values 
-/* before and after the peak is linear.
-/*------------------------------------------------------*/
-float linear(float[] stripValues) {
-  //from: Robert Fisher and K. Naidu. 2001. A Comparison of Algorithms for Subpixel Peak Detection. September 2001. https://doi.org/10.1007/978-3-642-58288-2
-  //See also: Humza Akhtar and Ramakrishna Kakarala. 2014. A methodology for evaluating accuracy of capacitive touch sensing grid patterns. IEEE/OSA Journal of Display Technology 10, 8: 672–682. https://doi.org/10.1109/JDT.2014.2312975
-
-  int maxIndex = naive(stripValues);
+  int previous = previous(maxIndex);
+  int next = next(maxIndex, stripValues);
   float offset;
+  float a;
+  float b;
 
-  if (stripValues[maxIndex + 1] > stripValues[maxIndex - 1]) {
-    offset = 0.5 * ((stripValues[maxIndex+1] - stripValues[maxIndex-1]) / (stripValues[maxIndex] - stripValues[maxIndex-1]));
-  } else {
-    offset = 0.5 * ((stripValues[maxIndex+1] - stripValues[maxIndex-1]) / (stripValues[maxIndex] + stripValues[maxIndex-1]));
-  }
+  //adding small values to prevent -infinity for zero measures
+  a = log(stripValues[previous]+0.0001) - log (stripValues[next]+0.0001);
+  b = log(stripValues[previous]+0.0001) - 2*log(stripValues[maxIndex]+0.0001) + log(stripValues[next]+0.0001);
+
+  offset = 0.5 * a / b;
 
   float touchPosition = maxIndex + offset;
 
   return touchPosition;
 }
-
-/*------------------------------------------------------*/
-/* PARABOLIC - Fits a prabolic curve through the highest 
-/* strip-value and its neighbors.
-/*------------------------------------------------------*/
-float parabolic(float[] stripValues) {
-  //from: Robert Fisher and K. Naidu. 2001. A Comparison of Algorithms for Subpixel Peak Detection. September 2001. https://doi.org/10.1007/978-3-642-58288-2
-  //See also: Humza Akhtar and Ramakrishna Kakarala. 2014. A methodology for evaluating accuracy of capacitive touch sensing grid patterns. IEEE/OSA Journal of Display Technology 10, 8: 672–682. https://doi.org/10.1109/JDT.2014.2312975
-  //Equivilant to linear interpolation between the values adjacent to the zero-crossing of the first derivitive. See Figure 5 of:
-  //                  François Blais and Marc Rioux. 1986. Real-time numerical peak detector. Signal Processing 11, 2: 145–155. https://doi.org/10.1016/0165-1684(86)90033-2 
-
-  int maxIndex = naive(stripValues);
-  float offset;
-
-  offset = 0.5 * ((stripValues[maxIndex-1] - stripValues[maxIndex+1]) / (stripValues[maxIndex+1] - 2*stripValues[maxIndex] + stripValues[maxIndex-1]));
-
-  float touchPosition = maxIndex + offset;
-
-  return touchPosition;
-}
-
-/*------------------------------------------------------*/
-/* BLAIS_RIOUX - Uses a filtered version of the 
-/* first derivitive and performs linear interpolation 
-/* between the values adjacent to the zero crossing
-/*------------------------------------------------------*/
-float blaisRioux(float[] stripValues) {
-  //from: François Blais and Marc Rioux. 1986. Real-time numerical peak detector. Signal Processing 11, 2: 145–155. https://doi.org/10.1016/0165-1684(86)90033-2 
-  //As the original peak-detector assumes a continuous stream of data, it needs to be modified for the sensor.
-  //We use the modified second order filter suggested in:  Robert Fisher and K. Naidu. 2001. A Comparison of Algorithms for Subpixel Peak Detection. September 2001. https://doi.org/10.1007/978-3-642-58288-2
-  int maxIndex = naive(stripValues);
-  float offset;
-
-  offset = 0.5 * ( secondOrderFilter(stripValues, maxIndex) /   ( secondOrderFilter(stripValues, maxIndex) - secondOrderFilter(stripValues, maxIndex-1)));
-
-  return maxIndex + offset;
-}
-
-
-float secondOrderFilter(float[] stripValues, int index) { //for Blais and Rioux Detector
-
-  int previous = index - 1;
-  int next = index + 1;
-
-  float filteredValue;
-
-  if (previous < 0) {
-    previous = index; //this is a dodgy assumption, needs exploration
-  }
-
-  if (next > stripValues.length-1) {
-    previous = stripValues.length-1; //ditto
-  }
-
-  filteredValue = previous - next;
-
-  return filteredValue;
-}
-
-
-
-/*------------------------------------------------------*/
-/* CENTRE OF MASS - Assume all strips readings are weights 
-/* placed equidistant on an imaginary plank. 
-/* Calculate where they would balence.
-/*------------------------------------------------------*/
-float centreOfMass(float[] weights) { //takes an array of values, and calculates their centre of mass (see https://www.mathsnetalevel.com/2924)
-
-  //Centre of Mass = weightA * positionA + weightB * positionB + weightC * positionC ... / weightA + weightB + weightC ...
-
-  float weightLocation = 0;
-  float weightSum = 0;
-  float centreOfMass;
-
-  for (int i = 0; i < weights.length; i++) {
-
-    weightLocation = weightLocation + weights[i]*(i); //sum of all weights multiplied by their position
-    weightSum = weightSum + weights[i]; //sum of all weights
-  }
-
-  centreOfMass = weightLocation / weightSum;
-  // println(centreOfMass);
-  return centreOfMass;
-}
-
-
-
-
-/*------------------------------------------------------*/
-/* BLOB CENTRE - Use Blob Tracking to detect touch-points. Use Centre of Blob for Touch Position. Interpolate and adjust threshold for precision.
-/*
-/*float blobCentre(float[] stripValues, int interpolations, int threshold) { //returns the position with the highest value --> no interpolation
-/*------------------------------------------------------*/
-
-// ToDo
-
-
-
 
 /*------------------------------------------------------*/
 /* CUBIC - Fits a Cubic curve through 
@@ -237,13 +171,99 @@ float CubicInterpolate(float y0, float y1,
 
 
 /*------------------------------------------------------*/
+/* PARABOLIC - Fits a prabolic curve through the highest 
+/* strip-value and its neighbors.
+/*------------------------------------------------------*/
+float parabolic(float[] stripValues) {
+  //from: Robert Fisher and K. Naidu. 2001. A Comparison of Algorithms for Subpixel Peak Detection. September 2001. https://doi.org/10.1007/978-3-642-58288-2
+  //See also: Humza Akhtar and Ramakrishna Kakarala. 2014. A methodology for evaluating accuracy of capacitive touch sensing grid patterns. IEEE/OSA Journal of Display Technology 10, 8: 672–682. https://doi.org/10.1109/JDT.2014.2312975
+  //Equivilant to linear interpolation between the values adjacent to the zero-crossing of the first derivitive. See Figure 5 of:
+  //                  François Blais and Marc Rioux. 1986. Real-time numerical peak detector. Signal Processing 11, 2: 145–155. https://doi.org/10.1016/0165-1684(86)90033-2 
+
+  int maxIndex = naive(stripValues);
+  int previous = previous(maxIndex);
+  int next = next(maxIndex, stripValues);
+  float offset;
+
+  offset = 0.5 * ((stripValues[previous] - stripValues[next]) / (stripValues[next] - 2*stripValues[maxIndex] + stripValues[previous]));
+
+  float touchPosition = maxIndex + offset;
+
+  return touchPosition;
+}
+
+/*------------------------------------------------------*/
+/* BLAIS_RIOUX - Uses a filtered version of the 
+/* first derivitive and performs linear interpolation 
+/* between the values adjacent to the zero crossing
+/*------------------------------------------------------*/
+float blaisRioux(float[] stripValues) {
+  //from: François Blais and Marc Rioux. 1986. Real-time numerical peak detector. Signal Processing 11, 2: 145–155. https://doi.org/10.1016/0165-1684(86)90033-2 
+  //As the original peak-detector assumes a continuous stream of data, it needs to be modified for the sensor.
+  //We use the modified second order filter suggested in:  Robert Fisher and K. Naidu. 2001. A Comparison of Algorithms for Subpixel Peak Detection. September 2001. https://doi.org/10.1007/978-3-642-58288-2
+  int maxIndex = naive(stripValues);
+  int previous = previous(maxIndex);
+  int next = next(maxIndex, stripValues);
+  float offset;
+
+  offset = 0.5 * ( secondOrderFilter(stripValues, maxIndex) /   ( secondOrderFilter(stripValues, maxIndex) - secondOrderFilter(stripValues, previous)));
+
+  return maxIndex + offset;
+}
+
+
+float secondOrderFilter(float[] stripValues, int index) { //for Blais and Rioux Detector
+
+  int previous = previous(index);
+  int next = next(index, stripValues);
+
+  float filteredValue;
+
+  filteredValue = previous - next;
+
+  return filteredValue;
+}
+
+
+
+/*------------------------------------------------------*/
+/* CENTRE OF MASS - Assume all strips readings are weights 
+/* placed equidistant on an imaginary plank. 
+/* Calculate where they would balence.
+/*------------------------------------------------------*/
+float centreOfMass(float[] weights) { //takes an array of values, and calculates their centre of mass (see https://www.mathsnetalevel.com/2924)
+
+  //Centre of Mass = weightA * positionA + weightB * positionB + weightC * positionC ... / weightA + weightB + weightC ...
+
+  float weightLocation = 0;
+  float weightSum = 0;
+  float centreOfMass;
+
+  for (int i = 0; i < weights.length; i++) {
+
+    weightLocation = weightLocation + weights[i]*(i); //sum of all weights multiplied by their position
+    weightSum = weightSum + weights[i]; //sum of all weights
+  }
+
+  centreOfMass = weightLocation / weightSum;
+  // println(centreOfMass);
+  return centreOfMass;
+}
+
+
+
+
+
+
+
+/*------------------------------------------------------*/
 /* MICROCHIP - Position is calculated as the centroid of 2 adjacent values
 /* Implemented by Cedric Honnet
 /*------------------------------------------------------*/
 float microchip(float[] niceData) {
   // Retrieval method from Microchip TB3064 white paper (p12):
   // microchip.com/stellent/groups/techpub_sg/documents/devicedoc/en550192.pdf
-  
+
   float retrievedPos = -1;
 
   // Find max index
@@ -270,3 +290,13 @@ float microchip(float[] niceData) {
 
   return (retrievedPos);
 }
+
+
+
+/*------------------------------------------------------*/
+/* BLOB CENTRE - Use Blob Tracking to detect touch-points. Use Centre of Blob for Touch Position. Interpolate and adjust threshold for precision.
+/*
+/*float blobCentre(float[] stripValues, int interpolations, int threshold) { //returns the position with the highest value --> no interpolation
+/*------------------------------------------------------*/
+
+// ToDo
