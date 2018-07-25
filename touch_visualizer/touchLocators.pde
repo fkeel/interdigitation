@@ -1,13 +1,16 @@
 
 // rescaled data has dummy line2!!!!
 
-//NAIVE --------------> Chose Highest Strip Value
 
-float naive(float[] stripValues) { //returns the position with the highest value --> no interpolation
+/*------------------------------------------------------*/
+/* NAIVE - Returns the max strip. Used as reference 
+/* algorithm and as helper function for some of the other algorithms
+/*------------------------------------------------------*/
+int naive(float[] stripValues) { //returns the position with the highest value --> no interpolation
 
   float maxValue = 0;
-  float maxIndex = 0;
-  float naivePosition;
+  int maxIndex = 0;
+  int naivePosition;
 
   for (int i = 0; i < stripValues.length; i++) {
 
@@ -17,13 +20,117 @@ float naive(float[] stripValues) { //returns the position with the highest value
     }
   }
 
-  naivePosition = maxIndex+0.5;
+  naivePosition = maxIndex;
   return naivePosition;
 }
 
 
-//CENTRE OF MASS --------------> Assume all strips are weights, calculate where they would balence.
+/*------------------------------------------------------*/
+/* GAUSSIAN - Uses the three highest, contiguous intensity 
+/* values around the observed peak of the strip and assumes
+/* that the observed peak shape fts a Gaussian profile.
+/*------------------------------------------------------*/
+float gaussian(float[] stripValues) {
+  //from: Robert Fisher and K. Naidu. 2001. A Comparison of Algorithms for Subpixel Peak Detection. September 2001. https://doi.org/10.1007/978-3-642-58288-2
+  //See also: Humza Akhtar and Ramakrishna Kakarala. 2014. A methodology for evaluating accuracy of capacitive touch sensing grid patterns. IEEE/OSA Journal of Display Technology 10, 8: 672–682. https://doi.org/10.1109/JDT.2014.2312975
 
+  //offset = 0.5 * ( ln(maxIndex-1)-ln(maxIndex+1) / lg(maxIndex-1) - 2ln(maxIndex) + ln(maxIndex+1) )
+  //log() in processing is the natural logarithm
+
+  int maxIndex = naive(stripValues);
+  float offset = 0.5 * ((log(stripValues[maxIndex-1]) - log (stripValues[maxIndex+1])) / (log(stripValues[maxIndex-1]) - 2*log(stripValues[maxIndex]) + log(stripValues[maxIndex+1])));
+  float touchPosition = maxIndex + offset;
+
+  return touchPosition;
+}
+
+/*------------------------------------------------------*/
+/* LINEAR - Assumes that the spread of intensity values 
+/* before and after the peak is linear.
+/*------------------------------------------------------*/
+float linear(float[] stripValues) {
+  //from: Robert Fisher and K. Naidu. 2001. A Comparison of Algorithms for Subpixel Peak Detection. September 2001. https://doi.org/10.1007/978-3-642-58288-2
+  //See also: Humza Akhtar and Ramakrishna Kakarala. 2014. A methodology for evaluating accuracy of capacitive touch sensing grid patterns. IEEE/OSA Journal of Display Technology 10, 8: 672–682. https://doi.org/10.1109/JDT.2014.2312975
+
+  int maxIndex = naive(stripValues);
+  float offset;
+
+  if (stripValues[maxIndex + 1] > stripValues[maxIndex - 1]) {
+    offset = 0.5 * ((stripValues[maxIndex+1] - stripValues[maxIndex-1]) / (stripValues[maxIndex] - stripValues[maxIndex-1]));
+  } else {
+    offset = 0.5 * ((stripValues[maxIndex+1] - stripValues[maxIndex-1]) / (stripValues[maxIndex] + stripValues[maxIndex-1]));
+  }
+
+  float touchPosition = maxIndex + offset;
+
+  return touchPosition;
+}
+
+/*------------------------------------------------------*/
+/* PARABOLIC - Fits a prabolic curve through the highest 
+/* strip-value and its neighbors.
+/*------------------------------------------------------*/
+float parabolic(float[] stripValues) {
+  //from: Robert Fisher and K. Naidu. 2001. A Comparison of Algorithms for Subpixel Peak Detection. September 2001. https://doi.org/10.1007/978-3-642-58288-2
+  //See also: Humza Akhtar and Ramakrishna Kakarala. 2014. A methodology for evaluating accuracy of capacitive touch sensing grid patterns. IEEE/OSA Journal of Display Technology 10, 8: 672–682. https://doi.org/10.1109/JDT.2014.2312975
+  //Equivilant to linear interpolation between the values adjacent to the zero-crossing of the first derivitive. See Figure 5 of:
+  //                  François Blais and Marc Rioux. 1986. Real-time numerical peak detector. Signal Processing 11, 2: 145–155. https://doi.org/10.1016/0165-1684(86)90033-2 
+
+  int maxIndex = naive(stripValues);
+  float offset;
+
+  offset = 0.5 * ((stripValues[maxIndex-1] - stripValues[maxIndex+1]) / (stripValues[maxIndex+1] - 2*stripValues[maxIndex] + stripValues[maxIndex-1]));
+
+  float touchPosition = maxIndex + offset;
+
+  return touchPosition;
+}
+
+/*------------------------------------------------------*/
+/* BLAIS_RIOUX - Uses a filtered version of the 
+/* first derivitive and performs linear interpolation 
+/* between the values adjacent to the zero crossing
+/*------------------------------------------------------*/
+float blaisRioux(float[] stripValues) {
+  //from: François Blais and Marc Rioux. 1986. Real-time numerical peak detector. Signal Processing 11, 2: 145–155. https://doi.org/10.1016/0165-1684(86)90033-2 
+  //As the original peak-detector assumes a continuous stream of data, it needs to be modified for the sensor.
+  //We use the modified second order filter suggested in:  Robert Fisher and K. Naidu. 2001. A Comparison of Algorithms for Subpixel Peak Detection. September 2001. https://doi.org/10.1007/978-3-642-58288-2
+  int maxIndex = naive(stripValues);
+  float offset;
+
+  offset = 0.5 * ( secondOrderFilter(stripValues, maxIndex) /   ( secondOrderFilter(stripValues, maxIndex) - secondOrderFilter(stripValues, maxIndex-1)));
+
+  return maxIndex + offset;
+}
+
+
+float secondOrderFilter(float[] stripValues, int index) { //for Blais and Rioux Detector
+
+  int previous = index - 1;
+  int next = index + 1;
+
+  float filteredValue;
+
+  if (previous < 0) {
+    previous = index; //this is a dodgy assumption, needs exploration
+  }
+
+  if (next > stripValues.length-1) {
+    previous = stripValues.length-1; //ditto
+  }
+
+  filteredValue = previous - next;
+
+  return filteredValue;
+}
+
+
+
+/*------------------------------------------------------*/
+/* CENTRE OF MASS - Assume all strips readings are weights 
+/* placed equidistant on an imaginary plank. 
+/* Calculate where they would balence.
+/*------------------------------------------------------*/
 float centreOfMass(float[] weights) { //takes an array of values, and calculates their centre of mass (see https://www.mathsnetalevel.com/2924)
 
   //Centre of Mass = weightA * positionA + weightB * positionB + weightC * positionC ... / weightA + weightB + weightC ...
@@ -39,22 +146,30 @@ float centreOfMass(float[] weights) { //takes an array of values, and calculates
   }
 
   centreOfMass = weightLocation / weightSum;
- // println(centreOfMass);
+  // println(centreOfMass);
   return centreOfMass;
 }
 
 
-//BLOB CENTRE -------------> Use Blob Tracking to detect touch-points. Use Centre of Blob for Touch Position. Interpolate and adjust threshold for precision.
-
-//float blobCentre(float[] stripValues, int interpolations, int threshold) { //returns the position with the highest value --> no interpolation
 
 
-//
-//}
+/*------------------------------------------------------*/
+/* BLOB CENTRE - Use Blob Tracking to detect touch-points. Use Centre of Blob for Touch Position. Interpolate and adjust threshold for precision.
+/*
+/*float blobCentre(float[] stripValues, int interpolations, int threshold) { //returns the position with the highest value --> no interpolation
+/*------------------------------------------------------*/
+
+// ToDo
 
 
-//CUBIC --------------> Use Cubic Interpolation
-//Implemented by Cedric Honnet
+
+
+/*------------------------------------------------------*/
+/* CUBIC - Fits a Cubic curve through 
+/* the maximum strip value, its preceding strip's value and the two subsequent strips' values
+/*
+/* Implemented by Cedric Honnet
+/*------------------------------------------------------*/
 float cubic(float[] niceData) {
   // This function aims to retrieve finger position
 
@@ -62,9 +177,6 @@ float cubic(float[] niceData) {
   int stripNumber = 7;
   float retrievedPos = -1;
   float[] y = new float[stripNumber*interFactor];
-
-
-
 
   // interpolate
   for (int s = 0; s < stripNumber; s++) { // sensor strips
@@ -124,12 +236,14 @@ float CubicInterpolate(float y0, float y1,
 }
 
 
-
-//MICROCHIP ------> Use Method based in Microchip WhitePaper 
-//Implemented by Cedric Honnet
+/*------------------------------------------------------*/
+/* MICROCHIP - Position is calculated as the centroid of 2 adjacent values
+/* Implemented by Cedric Honnet
+/*------------------------------------------------------*/
 float microchip(float[] niceData) {
-  // This function aims to retrieve finger position
-
+  // Retrieval method from Microchip TB3064 white paper (p12):
+  // microchip.com/stellent/groups/techpub_sg/documents/devicedoc/en550192.pdf
+  
   float retrievedPos = -1;
 
   // Find max index
@@ -142,10 +256,6 @@ float microchip(float[] niceData) {
     }
   }
 
-  // Retrieval method from Microchip TB3064 white paper (p12):
-  // microchip.com/stellent/groups/techpub_sg/documents/devicedoc/en550192.pdf
-  // Position is calculated as the centroid of 2 adjacent values:
-
   float prev = (maxIndex==0)?
     0 : niceData[maxIndex-1];
 
@@ -155,10 +265,8 @@ float microchip(float[] niceData) {
   retrievedPos = maxIndex + 0.5 * (next - prev) / niceData[maxIndex];
 
   // Offset TODO?
-  retrievedPos += 0.5;
- // retrievedPos *= width / stripNumber;
-
-
+  retrievedPos += 0.5; //maybe not required as we rescale anyway
+  // retrievedPos *= width / stripNumber;
 
   return (retrievedPos);
 }
