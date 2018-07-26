@@ -88,18 +88,27 @@ class Sensor {
 
     for (int y = 0; y < yPositions; y++) { //for each swipe
       for (int x = 0; x < xPositions; x++) { //at each position
-        for (int strip = 0; strip < stripNumber; strip++) { //get all the strip values
+      
+        for (int strip = 0; strip < stripNumber; strip++) { //get all the strip values, create an array to pass on to touch locators
           weights[strip] = data[pressure][strip][x][y];
         }
 
-        if (type.equals("CUBIC")) {
+        if (type.equals("NAIVE")) {
+          touchPosition = naive(weights);
+        } else if (type.equals("LINEAR")) {
+          touchPosition = linear(weights);
+        } else if (type.equals("GAUSSIAN")) {
+          touchPosition = gaussian(weights);
+        } else if (type.equals("CUBIC")) {
           touchPosition = cubic(weights);
+        } else if (type.equals("PARABOLIC")) {
+          touchPosition = parabolic(weights);
+        } else if (type.equals("BLAIS_RIOUX")) {
+          touchPosition = blaisRioux(weights);
         } else if (type.equals("COM")) {
           touchPosition = centreOfMass(weights);
         } else if (type.equals("MICROCHIP")) {
           touchPosition = microchip(weights);
-        } else if (type.equals("NAIVE")) {
-          touchPosition = naive(weights);
         } else {
           println("ERROR: UNKNOWN TOUCH LOCATOR");
         }
@@ -139,7 +148,7 @@ class Sensor {
       positions[2][z] = positions[2][z] - positions[0][z]-intercept+positions[2][z]*slope;
     }
 
- //   println(slope);
+    //   println(slope);
     return positions;
   }
 

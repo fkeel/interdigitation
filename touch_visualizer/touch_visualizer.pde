@@ -13,6 +13,8 @@ void setup() {
     textileSensors[i] = new Sensor(fileNames[i]);
   }
 
+  // saveResiduals(); 
+ // saveDeviations();
 
 
 
@@ -26,84 +28,37 @@ void setup() {
   translate(50, 20); //center stuff so it looks nice
 
 
+  println("finished!");
+  float[][] positions = textileSensors[9].returnPeaks(method[4], 0); 
+  
+  plotResidualsSummary(positions, 1,2);
+  
+  /*
+  positions = textileSensors[9].returnPeaks(method[4], 0);
+  plotResiduals(positions, 300, 1);
+  
+  translate(0,100);
 
+  positions = textileSensors[11].returnPeaks(method[4], 0);
+  plotResiduals(positions, 300, 1);
+  
+   translate(0,100);
+
+  positions = textileSensors[13].returnPeaks(method[4], 0);
+  plotResiduals(positions, 300, 1);
 
   /********* Draw Things ************/
-
-  //this needs some templates to easily recreate graphs used in paper/documentation
-  // (currently have a google doc with some examples)
-
-  //I draw stuff by looping through all my sensor objects. 
-  //I filter by the criterea I am looking for and then only visualize for the subset I'm interested in.
-  //right now I still do a bunch of things manually, not sure how much I'll update this, but open to requests
-
-  //In general I try to keep all the formatting here, so stroke(), fill() strokeWeight() etc should be used on visualizations just as any other processing object
-
-  //the below is messy, if I get around to it I'll organize this better
-
-  /***Example Template***/
-
-  // vizTestTemplate(ratio);
-
-
-  println("Width, Length, TouchSize, Algorithm, Error");
-  float[][] positions; 
-  float mean;
-  float sd;
-  for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-    positions = textileSensors[i].returnPeaks("LINEAR", 0);
-
-    print(textileSensors[i].spikeWidth);
-    print(", ");
-    print(textileSensors[i].spikeRatio);
-    print(", ");
-    print(textileSensors[i].pointSize);
-    print(", 0");
-    print(", NAIVE");
-
-
-    mean = meanAbs(positions[2]);
-    print(", ");
-    print(mean);
-
-    sd = standardDeviationAbs(positions[2]);
-    print(", ");
-    println(sd);
-  }
-
-  //     if (textileSensors[i].pointSizeIs(1.25)) {             
-  //    
-
   /*
 
-   fill(120);
-   translate( 0, 20);
-   //name of graph
-   // drawLegend(ratio); //alternatively drawAbsLegend(ratio) for normalized data
-   
-   pushMatrix();
-   translate(0, 120);
-   fill(0, 200);
-   //  text("Digit Height: 55%, 70%, 85%, 100%, Digit Width 35%", 0, -70);
-   
-   //draw some graphs
-   pushMatrix();
-   stroke(100, 0, 0, 120);
-   firstRow("CUBIC");
-   popMatrix();
-   
-   translate(0, 230);
-   
-   pushMatrix();
-   stroke(0, 0, 100, 120);
-   firstRow("MICROCHIP");
-   popMatrix();
-   
-   translate(0, 230);
-   
-   pushMatrix();
-   stroke(0, 100, 0, 120);
-   firstRow("COM");
-   popMatrix();
-   */
+  for (int i = 0; i < fileNames.length; i++) {      
+    for (int m = 0; m < method.length; m++) {   //loop through all methods for low pressure
+    }  
+    for (int m = 0; m < method.length; m++) {  //loop a second time for high pressure
+      positions = textileSensors[i].returnPeaks(method[m], 1);
+      for (int z = 0; z < positions[2].length; z++) {
+      }
+    }
+  }
+  
+  */
 }

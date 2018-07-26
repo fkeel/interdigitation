@@ -11,16 +11,6 @@ float mean(float[] data) {
   return mean;
 }
 
-float meanAbs(float[] data) { //average of absolute values
-  int counter = 0;
-  float total = 0;
-  for (int i = 0; i < data.length; i++) {
-    total = total+ abs(data[i]);
-    counter++;
-  }
-  float meanOfAbs = total / counter;
-  return meanOfAbs;
-}
 
 
 float standardDeviation(float[] data) {
@@ -40,6 +30,12 @@ float standardDeviation(float[] data) {
   return sd;
 }
 
+
+
+  variance = total / n-1; // kinda confused when its n and when its n-1
+  sd = sqrt(variance);
+  return sd;
+}
 
 float slope(float[] dataX, float[] dataY) {
   //x independent
@@ -106,7 +102,7 @@ float correlation(float[] dataX, float[] dataY) {
   float sdX = 0;
   float sdY = 0;
   float n = 0;
-  
+
   meanX = mean(dataX);
   meanY = mean(dataY);
   sdX = standardDeviation(dataX);
@@ -114,7 +110,7 @@ float correlation(float[] dataX, float[] dataY) {
 
   for (int i = 0; i < dataX.length; i++) {
     sumXdeviation = sumXdeviation + dataX[i] - meanX;
-     sumYdeviation = sumYdeviation + dataY[i] - meanY;
+    sumYdeviation = sumYdeviation + dataY[i] - meanY;
     n = n + 1;
   }
 
@@ -131,4 +127,22 @@ float[] simpleSmooth(float[] data) {
   data[data.length-1] =  (data[data.length-2] +  data[data.length-1]*2)/3; 
 
   return data;
+}
+
+//for touchlocators
+int previous(int current) {
+  int previous = current-1;
+  if (previous < 0) {
+    previous = current; //this is a dodgy assumption, needs exploration
+  }
+
+  return previous;
+}
+
+int next(int current, float[] stripValues) {
+  int next = current + 1;
+  if (next > stripValues.length-1) {
+    next = stripValues.length-1; //ditto
+  }
+  return next;
 }
