@@ -13,6 +13,7 @@ float mean(float[] data) {
   float total = 0;
   for (int i = 0; i < data.length; i++) {
     total = total+ data[i];
+    // println("total of: " + data[i]);
     counter++;
   }
   float mean = total / counter;
@@ -28,6 +29,7 @@ float standardDeviation(float[] data) {
   float average = mean(data);
 
   for (int i = 0; i < data.length; i++) {
+    //   println("sq of: " + data[i]);
     total = total + sq(data[i]-average);
     counter++;
   }
@@ -35,4 +37,13 @@ float standardDeviation(float[] data) {
   variance = total / counter;
   sd = sqrt(variance);
   return sd;
+}
+
+
+float confidenceInterval(float[] data, float interval) { //this needs updating for DF, they are currently hardcoded
+  float ci;
+  int n = data.length;
+  float sd = standardDeviation(data);
+  ci = interval * 2.228 * (sd/sqrt(n));
+  return ci;
 }

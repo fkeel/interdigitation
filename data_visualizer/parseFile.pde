@@ -16,7 +16,7 @@ float[][][][] parseFile(String filename) {
     //    println("... done");
     for (int y = 0; y < 7; y++) {
       //      println("writing to array index (" + items[2] + " / " + items[0] + " / " + abs(int(float(items[1])/2.5))+") Value: " + items[y+3]); 
-      data[int(items[2])][y][int(items[0])][abs(int(float(items[1])/2.5))] = int(items[y+3]);
+      data[int(items[2])][y][int(items[0])][abs(int(float(items[1])/2.5))] = float(items[y+3]);
     }
   }
   return data;

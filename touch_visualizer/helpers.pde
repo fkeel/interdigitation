@@ -1,36 +1,16 @@
 
 
-float mean(float[] data) {
-  int counter = 0;
-  float total = 0;
-  for (int i = 0; i < data.length; i++) {
-    total = total+ data[i];
-    counter++;
-  }
-  float mean = total / counter;
-  return mean;
-}
-
-
-
-float standardDeviation(float[] data) {
+float standardDeviationAbs(float[] data) {
   int n = 0;
   float total = 0;  
   float variance = 0;
   float sd;
-  float average = mean(data);
+  float average = meanAbs(data);
 
   for (int i = 0; i < data.length; i++) {
     total = total + sq(data[i]-average);
     n++;
   }
-
-  variance = total / n-1; // kinda confused when its n and when its n-1
-  sd = sqrt(variance);
-  return sd;
-}
-
-
 
   variance = total / n-1; // kinda confused when its n and when its n-1
   sd = sqrt(variance);
@@ -127,6 +107,57 @@ float[] simpleSmooth(float[] data) {
   data[data.length-1] =  (data[data.length-2] +  data[data.length-1]*2)/3; 
 
   return data;
+}
+
+float mean(float[] data) {
+  int counter = 0;
+  float total = 0;
+  for (int i = 0; i < data.length; i++) {
+    total = total+ data[i];
+    // println("total of: " + data[i]);
+    counter++;
+  }
+  float mean = total / counter;
+  return mean;
+}
+
+
+float standardDeviation(float[] data) {
+  int counter = 0;
+  float total = 0;  
+  float variance = 0;
+  float sd;
+  float average = mean(data);
+
+  for (int i = 0; i < data.length; i++) {
+    //   println("sq of: " + data[i]);
+    total = total + sq(data[i]-average);
+    counter++;
+  }
+
+  variance = total / counter;
+  sd = sqrt(variance);
+  return sd;
+}
+
+float meanAbs(float[] data) { //average of absolute values
+  int counter = 0;
+  float total = 0;
+  for (int i = 0; i < data.length; i++) {
+    total = total+ abs(data[i]);
+    counter++;
+  }
+  float meanOfAbs = total / counter;
+  return meanOfAbs;
+}
+
+
+float confidenceInterval(float[] data, float interval) { //this needs updating for DF, they are currently hardcoded 
+  float ci;
+  int n = data.length;
+  float sd = standardDeviation(data);
+  ci = interval * 2.228 * (sd/sqrt(n)); //assumes 1.96
+  return ci;
 }
 
 //for touchlocators

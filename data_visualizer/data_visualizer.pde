@@ -1,3 +1,5 @@
+// this version is updated to work with the normalized sensor values
+
 import processing.pdf.*; //for exporting visualizations
 import java.io.BufferedWriter; //for logging lines
 import java.io.FileWriter; //create files
@@ -87,12 +89,12 @@ void setup() {
 
   /********* global graphics settings ************/
 
-  size(1150, 1050); // for visualizing on screen
-  //  size(1150, 550, PDF, "Memory.pdf"); //for exporting to pdf
+  size(800, 800); // for visualizing on screen
+   // size(1150, 550, PDF, "touch_sizes.svg"); //for exporting to pdf
   // strokeCap(ROUND); //this matters when you zoom in, not sure whats best
   background(255); //white background 
   translate(50, 20); //center stuff so it looks nice
-  float ratio = 0.4; //size of the graphs. 0.4 works nice for showing a single sensor/strip
+
 
 
 
@@ -111,34 +113,14 @@ void setup() {
   //the below is messy, if I get around to it I'll organize this better
 
   /***Example Template***/
+  // exampleTemplate();
+  //  vizTestTemplate(ratio);
 
-  // vizTestTemplate(ratio);
-
-  /***Memory Effects***/
 
   fill(120);
   translate( 0, 20);
-  text("Non Interdigitized Sensor, Memory Effect", 750, -4); //name of graph
-  drawLegend(ratio); //alternatively drawAbsLegend(ratio) for normalized data
-
-  pushMatrix();
-  //draw some graphs
-  for (int i = 0; i < fileNames.length; i++) {            //loop through all the files and grab the data of the ones we want
-    if (textileSensors[i].spikeWidthIs(100)) {             //filter according to spikeWidth
-      if (textileSensors[i].spikeRatioIs(0)) {          //filter according to ratio
-        if (textileSensors[i].pointSizeIs(1.25)) {        //filter according to point szie
-
-          for (int y = 0; y < 11; y++) {
-
-            stroke(23*y, 180, 255-(23*y));
-            fill(23*y, 180, 255-(23*y), 80);
-            strokeWeight(1.5);
-
-            textileSensors[i].drawStripAtY(0, y, 2, ratio);
-          }
-        }
-      }
-    }
-  }
-  popMatrix();
+ // touchSizes(); //figure 7
+ // lowVSHighPressure();
+// digitWidthComparisons();
+comparisonDigitLengths(); //figure 8
 }
