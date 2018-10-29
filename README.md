@@ -21,7 +21,7 @@
 ## b) Other material:
 Pattern Generator: https://github.com/fkeel/patternGenerator
 
-(Alternative approach: https://github.com/fkeel/stripPatternGenerator)
+(Alternative approach: https://github.com/eTextile/stripPatternGenerator)
 
 CNC Control Code: https://github.com/fkeel/CNC-Sensor-Tester
 
