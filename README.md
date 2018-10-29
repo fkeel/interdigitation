@@ -15,3 +15,10 @@
 * **spss_misc**: Output and spss files used for this paper *(to-do: double check that these are the most recent)*
 * **touch_visualizer**: Like the data visualizer, just here the touch-positions are used for creating images
 * **interpolation_methods**: Functions evaluated in the paper (This code will not run as is, to see them in action, check the touch_visualizer sketch).
+
+## b) Other material:
+Pattern Generator: https://github.com/fkeel/patternGenerator
+(Alternative approach: https://github.com/fkeel/stripPatternGenerator)
+CNC Control Code: https://github.com/fkeel/CNC-Sensor-Tester
+Touch Simulation tool: https://github.com/3dTextiles/InterdigitationCharacterisation
+
