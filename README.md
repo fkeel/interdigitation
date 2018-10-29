@@ -2,6 +2,8 @@
 
 ## This material is best understood in the context of our research paper, currently under review
 
+![alt text](https://github.com/fkeel/interdigitation/blob/master/all_data_purpleHIGH_redLOW.PNG "raw readings of all strokes on all sensors visualized at once")
+
 ## a) Content of the repo:
 
 * **00 - Raw Original Files**: As output from the data collection process
