@@ -18,7 +18,11 @@
 
 ## b) Other material:
 Pattern Generator: https://github.com/fkeel/patternGenerator
+
 (Alternative approach: https://github.com/fkeel/stripPatternGenerator)
+
 CNC Control Code: https://github.com/fkeel/CNC-Sensor-Tester
+
 Touch Simulation tool: https://github.com/3dTextiles/InterdigitationCharacterisation
+
 
