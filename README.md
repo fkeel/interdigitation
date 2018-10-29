@@ -27,4 +27,6 @@ CNC Control Code: https://github.com/fkeel/CNC-Sensor-Tester
 
 Touch Simulation tool: https://github.com/3dTextiles/InterdigitationCharacterisation
 
+## c) Supplementary Visualizations:
 
+## d) Regarding Manufacturing:
