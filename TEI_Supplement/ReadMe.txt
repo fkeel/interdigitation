@@ -1,6 +1,4 @@
 
-All our code will be made available through the projects GitHub repository. We are currently not sharing the link to protect the blind peer-review process.
-
 Attached is a subset of the supplementary material:
 
 - The interpolation methods as Processing functions
