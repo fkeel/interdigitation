@@ -23,8 +23,8 @@ void setup() {
   int graphWidth = 1700;
 
   int graphHeight = 800;
- // size(1200, 800, PDF, "figure9.pdf"); // for visualizing on screen
-    size(1750, 850); //for exporting to pdf
+ //  size(1200, 800, PDF, "figure11smallb.pdf"); // for visualizing on screen
+   size(1750, 850); //for exporting to pdf
   strokeCap(ROUND); //this matters when you zoom in, not sure whats best
   background(255); //white background 
   translate(50, 20); //center stuff so it looks nice
@@ -37,7 +37,7 @@ void setup() {
     if (textileSensors[i].spikeWidthIs(100)) {             //filter according to spikeWidth
       if (textileSensors[i].spikeRatioIs(00)) { 
         if (textileSensors[i].pointSizeIs(1.25)) { 
-             translate(-550,0);
+             translate(-450,0);
           plotAllMethods(i+2);
        
         }
@@ -47,7 +47,7 @@ void setup() {
      if (textileSensors[i].spikeWidthIs(35)) {             //filter according to spikeWidth
       if (textileSensors[i].spikeRatioIs(100)) { 
         if (textileSensors[i].pointSizeIs(1.25)) { 
-          translate(550,0);
+          translate(450,0);
           plotAllMethods(i+2);
            
         }
